@@ -3,19 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DeepCore</title>
+<title>DeepCore v5</title>
 
 <style>
 :root{
 --bg:#e6e6e6;
 --text:#000;
---user:#d9d9d9;
-}
-
-.dark{
---bg:#0f0f0f;
---text:#fff;
---user:#2a2a2a;
+--user:#dcdcdc;
 }
 
 body{
@@ -25,26 +19,33 @@ background:var(--bg);
 color:var(--text);
 height:100vh;
 display:flex;
-transition:.3s;
 overflow:hidden;
 }
 
-/* SIDEBAR */
+/* Overlay */
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.3);
+display:none;
+z-index:4;
+}
 
+/* Sidebar */
 .sidebar{
 width:260px;
-background:var(--bg);
-border-right:1px solid #ccc;
-padding:15px;
+background:#f2f2f2;
 position:fixed;
 left:-260px;
 top:0;
 height:100%;
+padding:15px;
 transition:.3s;
+z-index:5;
 display:flex;
 flex-direction:column;
 gap:10px;
-z-index:5;
+overflow-y:auto;
 }
 
 .sidebar.active{
@@ -52,15 +53,14 @@ left:0;
 }
 
 .sidebar button{
-padding:10px;
-border-radius:10px;
-border:1px solid #999;
-background:transparent;
+padding:8px;
+border-radius:8px;
+border:1px solid #ccc;
+background:white;
 cursor:pointer;
 }
 
-/* MAIN */
-
+/* Main */
 .main{
 flex:1;
 display:flex;
@@ -74,15 +74,16 @@ justify-content:space-between;
 padding:12px;
 }
 
-button.icon{
-border-radius:50%;
+.icon{
 width:36px;
 height:36px;
+border-radius:50%;
 border:1px solid #888;
-background:transparent;
+background:white;
 cursor:pointer;
 }
 
+/* Chat */
 #chat{
 flex:1;
 overflow-y:auto;
@@ -98,13 +99,12 @@ opacity:.3;
 margin-top:40px;
 }
 
-/* MESSAGES */
-
 .msg{
 max-width:75%;
 font-size:15px;
 opacity:0;
 animation:fadeIn 1s forwards;
+white-space:pre-wrap;
 }
 
 @keyframes fadeIn{
@@ -123,28 +123,7 @@ border-radius:16px;
 align-self:flex-start;
 }
 
-.actions{
-display:flex;
-gap:6px;
-margin-top:6px;
-}
-
-.actions span{
-width:28px;
-height:28px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-border:1px solid #000;
-background:#fff;
-color:#000;
-cursor:pointer;
-font-size:13px;
-}
-
-/* TYPING */
-
+/* Typing */
 .typing{
 display:flex;
 gap:5px;
@@ -154,7 +133,7 @@ gap:5px;
 width:6px;
 height:6px;
 border-radius:50%;
-background:var(--text);
+background:#000;
 animation:bounce 1.4s infinite;
 }
 
@@ -166,13 +145,11 @@ animation:bounce 1.4s infinite;
 40%{transform:translateY(-6px);}
 }
 
-/* FOOTER */
-
+/* Footer */
 footer{
 display:flex;
 gap:6px;
 padding:10px;
-position:relative;
 }
 
 input{
@@ -191,50 +168,26 @@ transition:.3s;
 #send.active{
 opacity:1;
 }
-
-/* PLUS MENU */
-
-.plusMenu{
-position:absolute;
-bottom:60px;
-left:10px;
-background:#fff;
-border-radius:12px;
-box-shadow:0 5px 20px rgba(0,0,0,.1);
-padding:10px;
-display:none;
-flex-direction:column;
-gap:6px;
-z-index:10;
-}
-
-.plusMenu button{
-display:flex;
-justify-content:space-between;
-border:none;
-background:none;
-padding:6px;
-cursor:pointer;
-}
-
 </style>
 </head>
 
 <body>
 
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
 <div class="sidebar" id="sidebar">
-<button onclick="newChat()">Новый чат</button>
+<button onclick="newChat()">➕ Новый чат</button>
+<div id="chatList"></div>
 <button onclick="fake()">Изображения</button>
 <button onclick="fake()">Приложения</button>
 <button onclick="fake()">Новый проект</button>
-<button onclick="showChats()">Все чаты</button>
 </div>
 
 <div class="main">
-
 <header>
-<button class="icon" onclick="toggleSidebar()">☰</button>
-<button class="icon" onclick="toggleTheme()">🌓</button>
+<button class="icon" onclick="openSidebar()">☰</button>
+<div>DeepCore</div>
+<button class="icon">🌓</button>
 </header>
 
 <div id="chat">
@@ -245,77 +198,93 @@ cursor:pointer;
 </div>
 
 <footer>
-<button class="icon" onclick="togglePlus()">＋</button>
-<div class="plusMenu" id="plusMenu">
-<button onclick="fake()">📷 Фотографии</button>
-<button onclick="fake()">📸 Камера</button>
-<button onclick="fake()">📁 Файлы</button>
-<button onclick="fake()">🎨 Создать изображение</button>
-<button onclick="fake()">🧠 Думаю</button>
-<button onclick="fake()">🔬 Глубокое исследование</button>
-<button onclick="fake()">🛍 Поиск покупок</button>
-<button onclick="fake()">🌐 Поиск в сети</button>
-<button onclick="fake()">📚 Учеба и обучение</button>
-<button onclick="fake()">❓ Викторины</button>
-<button onclick="fake()">🧩 Исследовать приложения</button>
-</div>
-<input id="input">
+<input id="input" placeholder="Спросить DeepCore">
 <button id="send">➤</button>
 </footer>
-
 </div>
 
 <script>
 const input=document.getElementById("input");
 const send=document.getElementById("send");
 const chat=document.getElementById("chat");
+const sidebar=document.getElementById("sidebar");
+const overlay=document.getElementById("overlay");
+const chatList=document.getElementById("chatList");
 
-const placeholders=[
-"Спросить DeepCore",
-"А вы знали что DeepCore сделал Миша? 😎",
-"DeepCore Это рил мощный ИИ, да да",
-"DeepCore лучший друг ChatGPT"
-];
+let chats=JSON.parse(localStorage.getItem("deepcore_v5"))||[];
+let currentChat=[];
+let lastUserMessage="";
 
-function randomPlaceholder(){
-if(Math.random()<0.75){
-input.placeholder="Спросить DeepCore";
-}else{
-input.placeholder=placeholders[Math.floor(Math.random()*placeholders.length)];
+function save(){
+localStorage.setItem("deepcore_v5",JSON.stringify(chats));
+renderChats();
 }
-}
-randomPlaceholder();
 
-input.addEventListener("focus",randomPlaceholder);
+function renderChats(){
+chatList.innerHTML="";
+chats.forEach((c,i)=>{
+let btn=document.createElement("button");
+btn.textContent=c[0]?.text?.slice(0,20)||"Чат";
+btn.onclick=()=>loadChat(i);
+chatList.appendChild(btn);
+});
+}
+
+function newChat(){
+if(currentChat.length){
+chats.push(currentChat);
+save();
+}
+currentChat=[];
+chat.innerHTML="";
+closeSidebar();
+}
+
+function loadChat(i){
+chat.innerHTML="";
+currentChat=chats[i];
+currentChat.forEach(m=>addMsg(m.text,m.role,false));
+closeSidebar();
+}
+
+function openSidebar(){
+sidebar.classList.add("active");
+overlay.style.display="block";
+}
+
+function closeSidebar(){
+sidebar.classList.remove("active");
+overlay.style.display="none";
+}
+
+function fake(){
+alert("У DeepCore пока нет такой функции 😅");
+}
 
 input.addEventListener("input",()=>{
-send.classList.toggle("active",input.value.trim().length>0);
+send.classList.toggle("active",input.value.trim());
 });
 
 send.onclick=()=>{
 if(!input.value.trim())return;
 addMsg(input.value,"user");
-let text=input.value;
+currentChat.push({role:"user",text:input.value});
+lastUserMessage=input.value.toLowerCase();
 input.value="";
 showTyping();
 setTimeout(()=>{
 removeTyping();
-addMsg(generate(text),"bot",true);
-},4000);
+let r=generate(lastUserMessage);
+addMsg(r,"bot");
+currentChat.push({role:"bot",text:r});
+},3000);
 };
 
-function addMsg(text,type,actions=false){
+function addMsg(text,type){
 const msg=document.createElement("div");
 msg.className="msg "+type;
 msg.textContent=text;
 chat.appendChild(msg);
-
-if(actions){
-const act=document.createElement("div");
-act.className="actions";
-act.innerHTML="<span>📋</span><span>👍</span><span>👎</span><span>⋯</span>";
-msg.appendChild(act);
-}
 chat.scrollTop=chat.scrollHeight;
 }
 
@@ -331,34 +300,51 @@ function removeTyping(){
 document.getElementById("typing")?.remove();
 }
 
-function toggleSidebar(){
-document.getElementById("sidebar").classList.toggle("active");
+/* ===== УМНЫЙ МОЗГ ===== */
+
+const helloResponses=[
+"Кого я вижу!",
+"Ну наконец-то! А то я уже заскучал.",
+"Йо!",
+"Мир твоему дому!",
+"Салют!"
+];
+
+const howResponses=[
+"Лучше всех, а жаловаться грех!",
+"Как в автобусе — трясет, но едем.",
+"Да бывает по-всякому, но держусь."
+];
+
+const unclearResponses=[
+"Давай-ка поподробнее, а то я не уловил суть.",
+"Ты сейчас издал такой звук, что мой словарь дал сбой 😅",
+"Можно чуть понятнее?"
+];
+
+function random(arr){
+return arr[Math.floor(Math.random()*arr.length)];
 }
 
-function togglePlus(){
-document.getElementById("plusMenu").style.display=
-document.getElementById("plusMenu").style.display==="flex"?"none":"flex";
+function generate(t){
+
+if(t.includes("привет")) return random(helloResponses);
+if(t.includes("как дела")) return random(howResponses);
+
+if(/^[0-9+\-*/(). ]+$/.test(t)){
+try{return eval(t);}catch{return "Ошибка вычисления";}
 }
 
-function toggleTheme(){
-document.body.classList.toggle("dark");
+if(t.length<3) return random(unclearResponses);
+
+if(t.includes("?")){
+return "Интересный вопрос 🤔 Дай секунду подумать... Пока могу сказать: всё возможно.";
 }
 
-function fake(){
-alert("У DeepCore пока нет такой функции 😅");
+return random(unclearResponses);
 }
 
-function newChat(){
-chat.innerHTML="";
-}
-
-function showChats(){
-alert("У DeepCore пока нет такой функции 😅");
-}
-
-function generate(text){
-return "Интересно... расскажи подробнее.";
-}
+renderChats();
 </script>
 
 </body>
