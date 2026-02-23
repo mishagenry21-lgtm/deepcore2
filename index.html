@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DeepCore 4.0</title>
+<title>DeepCore 4.1</title>
 
 <style>
 :root{
@@ -16,7 +16,7 @@
 
 .light{
 --bg:#f4f4f4;
---input:#ffffff;
+--input:#fff;
 --text:#000;
 --accent:#000;
 --bubble:#e5e5e5;
@@ -57,9 +57,9 @@ opacity:.9;
 
 .message{
 margin:8px 0;
-max-width:80%;
+max-width:85%;
 white-space:pre-wrap;
-line-height:1.5;
+line-height:1.6;
 }
 
 .user{
@@ -202,22 +202,22 @@ hello.style.display="none";
 const div=document.createElement("div");
 div.className="message "+type;
 chat.appendChild(div);
-
 if(type==="bot") typeWriter(div,text);
 else div.textContent=text;
-
 chat.scrollTop=chat.scrollHeight;
 }
 
+/* Анимация текста как у ChatGPT */
 function typeWriter(el,text){
 let i=0;
-function type(){
+function typing(){
 if(i<text.length){
 el.textContent+=text[i++];
-setTimeout(type,18);
+chat.scrollTop=chat.scrollHeight;
+setTimeout(typing,12);
 }
 }
-type();
+typing();
 }
 
 function random(arr){
@@ -227,6 +227,43 @@ return arr[Math.floor(Math.random()*arr.length)];
 function generateResponse(msg){
 msg=msg.toLowerCase();
 
+/* --- команды --- */
+if(msg==="/help"){
+return `Команды DeepCore:
+
+/help — список команд
+/Bigresponse — большой ответ 15+ строк
+
+Также:
+• Работает калькулятор (пример: 5+5)
+• Реагирую на "привет"
+• Реагирую на "как дела"`;
+}
+
+if(msg==="/bigresponse"){
+return `Квантовый компьютер — это вычислительная система нового поколения.
+Он работает не с обычными битами, а с кубитами.
+Кубиты могут находиться в состоянии суперпозиции.
+Это означает одновременное существование 0 и 1.
+Также существует явление квантовой запутанности.
+Частицы могут быть связаны независимо от расстояния.
+Такие эффекты позволяют выполнять параллельные вычисления.
+Квантовые алгоритмы отличаются от классических.
+Например, алгоритм Шора ускоряет факторизацию чисел.
+Это может повлиять на современную криптографию.
+Квантовые системы крайне чувствительны к шуму.
+Поэтому требуется коррекция ошибок.
+Учёные создают стабильные кубиты.
+Используются сверхпроводники и ионные ловушки.
+Технология пока развивается.
+Но потенциал у неё огромный.
+В будущем квантовые компьютеры могут изменить науку.
+Они помогут моделировать молекулы.
+Оптимизировать сложные процессы.
+И решать задачи, невозможные для обычных ПК.`;
+}
+
+/* --- словарь --- */
 if(msg.includes("привет")||msg.includes("здарова")||msg.includes("хай")||msg.includes("йо")){
 return random([
 "Кого я вижу! 😎",
@@ -237,29 +274,58 @@ return random([
 "Доброго времени суток!",
 "Мое почтение.",
 "Приветствую!",
-"Салют!"
+"Здравствуй(те)!",
+"Салют!",
+"Здарова!",
+"Хай!",
+"О, какие люди!",
+"Здорово, коль не шутишь.",
+"Йо!",
+"Привет-привет!"
+"Привет! Как там жизнь молодая?",
+"Мир твоему дому!"
 ]);
 }
 
 if(msg.includes("как дела")){
 return random([
-"Дела — как сажа бела? Шучу, отлично! 😄",
 "Лучше всех, а жаловаться грех!",
 "Нормально, как в автобусе — трясет, но едем.",
+"Дела — как сажа бела? Шучу, отлично! 😄",
+"Лучше всех, а жаловаться грех!",
+"Идут потихоньку, ладно хоть не ползком.",
+"Как в сказке: чем дальше, тем страшнее! 😅",
+"Как у белого человека в пятницу вечером.",
+"Нормально, как в автобусе — трясет, но едем.",
+"Жду зарплату/лето/понедельник (нужное подчеркнуть).",
+"В полном порядке, даже не спрашивай!",
+"Да бывает по-всякому, но держусь.",
+"Могло быть лучше, но судя по всему — не сегодня.",
+"Если честно — устал как собака.",
+"Всё сложно... но интересно!",
+"Дела у прокурора, а у меня делишки. А у тебя?",
+"Есть две новости: хорошая и плохая. С какой начнем?",
+"А что, уже спрашивают?",
+"Жаловаться не буду, но похвастаться нечем. А у тебя как?"
 "Всё сложно... но интересно!",
 "Есть две новости: хорошая и плохая. С какой начнем?"
 ]);
 }
 
+if(/^\d+[\+\-\*\/]\d+$/.test(msg)){
+return eval(msg).toString();
+}
+
 if(msg.length<2){
 return random([
-"Повтори, я завис на секунду 😅",
 "Можно чуть понятнее?",
-"Расшифруй, а то словарь дал сбой."
+"Ого",
+"Повтори, я завис 😅",
+"Расшифруй мысль."
 ]);
 }
 
-return "Интересно 🤔 Расскажи подробнее.";
+return "Интересный вопрос 😎 Расскажи подробнее.";
 }
 
 function showThinking(callback){
@@ -269,37 +335,24 @@ think.className="message bot";
 think.textContent="Думаю...";
 chat.appendChild(think);
 chat.scrollTop=chat.scrollHeight;
-
-setTimeout(()=>{
-think.remove();
-callback();
-},2000);
-
+setTimeout(()=>{think.remove();callback();},2000);
 }else{
 const dots=document.createElement("div");
 dots.className="message bot typingDots";
 dots.innerHTML="<span></span><span></span><span></span>";
 chat.appendChild(dots);
 chat.scrollTop=chat.scrollHeight;
-
-setTimeout(()=>{
-dots.remove();
-callback();
-},5000);
+setTimeout(()=>{dots.remove();callback();},5000);
 }
 }
 
 function sendMessage(){
 let msg=input.value.trim();
 if(!msg) return;
-
 addMessage(msg,"user");
 input.value="";
 sendBtn.style.display="none";
-
-showThinking(()=>{
-addMessage(generateResponse(msg),"bot");
-});
+showThinking(()=>addMessage(generateResponse(msg),"bot"));
 }
 
 sendBtn.onclick=sendMessage;
@@ -312,38 +365,33 @@ input.addEventListener("keypress",e=>{
 if(e.key==="Enter") sendMessage();
 });
 
-/* Печатающиеся подсказки */
+/* Placeholder анимация */
 const phrases=[
-"Напиши 'привет' 😎",
-"Спроси: как дела?",
-"Попробуй что-нибудь неожиданное...",
-"DeepCore думает быстрее чем кажется 🚀"
+"DeepCore не спит",
+"DeepCore крутой",
+"Кстати, DeepCore 4.1 v6",
+"Спрашивай что угодно",
+"DeepCore лучший друг ChatGPT",
+"DeepCore шарит 😎",
+"DeepCore рил мощный ИИ, да да",
+"Спроси что-нибудь умное",
+"Попробуй /Bigresponse 🚀"
 ];
 
-let phraseIndex=0;
-let charIndex=0;
-let deleting=false;
+let p=0,c=0,del=false;
 
-function typePlaceholder(){
-let current=phrases[phraseIndex];
-if(!deleting){
-input.placeholder=current.slice(0,++charIndex);
-if(charIndex===current.length){
-deleting=true;
-setTimeout(typePlaceholder,1200);
-return;
-}
+function animatePlaceholder(){
+let current=phrases[p];
+if(!del){
+input.placeholder=current.slice(0,++c);
+if(c===current.length){del=true;setTimeout(animatePlaceholder,1000);return;}
 }else{
-input.placeholder=current.slice(0,--charIndex);
-if(charIndex===0){
-deleting=false;
-phraseIndex=(phraseIndex+1)%phrases.length;
+input.placeholder=current.slice(0,--c);
+if(c===0){del=false;p=(p+1)%phrases.length;}
 }
+setTimeout(animatePlaceholder,60);
 }
-setTimeout(typePlaceholder,60);
-}
-
-typePlaceholder();
+animatePlaceholder();
 </script>
 
 </body>
