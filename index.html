@@ -2,345 +2,251 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DeepCore 4.2</title>
+<title>DeepCore AI</title>
 
 <style>
-:root{
---bg:#111;
---input:#1b1b1b;
---text:#fff;
---accent:#fff;
---bubble:#2a2a2a;
+body {
+  margin: 0;
+  background: #0d0d0d;
+  font-family: Arial, sans-serif;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
-.light{
---bg:#f4f4f4;
---input:#fff;
---text:#000;
---accent:#000;
---bubble:#e5e5e5;
+
+#chat {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-body{
-margin:0;
-font-family:system-ui;
-background:var(--bg);
-color:var(--text);
-display:flex;
-flex-direction:column;
-height:100vh;
-transition:.3s;
+
+.user-message {
+  align-self: flex-end;
+  background: #19c37d;
+  color: black;
+  padding: 10px 14px;
+  border-radius: 14px;
+  max-width: 70%;
 }
-header{
-padding:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-border-bottom:1px solid #444;
+
+.bot-message {
+  align-self: flex-start;
+  background: #1e1e1e;
+  padding: 10px 14px;
+  border-radius: 14px;
+  max-width: 70%;
+  white-space: pre-wrap;
 }
-#chat{
-flex:1;
-overflow-y:auto;
-padding:20px;
-display:flex;
-flex-direction:column;
+
+/* Анимация печати */
+.typing {
+  border-right: 2px solid #19c37d;
+  animation: blink 0.8s infinite;
 }
-.centerHello{
-margin:auto;
-text-align:center;
-opacity:.9;
+
+@keyframes blink {
+  50% { border-color: transparent; }
 }
-.message{
-margin:8px 0;
-max-width:85%;
-white-space:pre-wrap;
-line-height:1.6;
+
+/* Панель ввода */
+form {
+  display: flex;
+  padding: 10px;
+  background: #111;
+  gap: 8px;
 }
-.user{
-background:var(--bubble);
-padding:10px 14px;
-border-radius:14px;
-margin-left:auto;
+
+input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background: #1e1e1e;
+  color: white;
+  font-size: 15px;
 }
-.bot{
-padding:4px 0;
+
+button {
+  border: none;
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
 }
-.inputArea{
-padding:12px;
-border-top:1px solid #444;
+
+#send-btn {
+  background: #19c37d;
 }
-.inputBox{
-display:flex;
-align-items:center;
-gap:8px;
-background:var(--input);
-border-radius:30px;
-padding:8px 14px;
-border:1px solid var(--accent);
+
+#plus-btn {
+  background: #2a2a2a;
+  color: white;
 }
-#messageInput{
-flex:1;
-background:transparent;
-border:none;
-outline:none;
-color:var(--text);
-font-size:16px;
+
+/* Выпадающее меню */
+#menu {
+  position: absolute;
+  bottom: 70px;
+  right: 20px;
+  background: #1e1e1e;
+  border-radius: 10px;
+  padding: 10px;
+  display: none;
+  flex-direction: column;
+  gap: 5px;
 }
-button{
-width:36px;
-height:36px;
-border-radius:50%;
-border:1px solid var(--accent);
-background:transparent;
-color:var(--text);
-cursor:pointer;
-}
-#sendBtn{
-display:none;
-background:var(--accent);
-color:var(--bg);
-}
-.typingDots span{
-display:inline-block;
-width:6px;
-height:6px;
-margin:0 2px;
-background:var(--text);
-border-radius:50%;
-animation:jump 1s infinite;
-}
-.typingDots span:nth-child(2){animation-delay:.2s}
-.typingDots span:nth-child(3){animation-delay:.4s}
-@keyframes jump{
-0%,80%,100%{transform:translateY(0)}
-40%{transform:translateY(-6px)}
-}
-.plusMenu{
-position:absolute;
-bottom:80px;
-left:20px;
-background:var(--input);
-border:1px solid var(--accent);
-border-radius:12px;
-padding:10px;
-display:none;
-flex-direction:column;
-gap:8px;
+
+#menu button {
+  background: #2a2a2a;
+  color: white;
 }
 </style>
 </head>
 <body>
 
-<header>
-<span>DeepCore 🚀</span>
-<button onclick="toggleTheme()">🌓</button>
-</header>
+<div id="chat"></div>
 
-<div id="chat">
-<div class="centerHello" id="hello">
-<h2>Привет, я DeepCore 😎</h2>
-<p>Чем могу помочь вам сегодня?</p>
-</div>
+<div id="menu">
+  <button onclick="insertText('/help')">/help</button>
+  <button onclick="insertText('/Bigresponse')">/Bigresponse</button>
+  <button onclick="insertText('DeepCore крутой')">Фраза</button>
 </div>
 
-<div class="inputArea">
-<div class="inputBox">
-<button onclick="togglePlus()">+</button>
-<button onclick="toggleThink()">🧠</button>
-<input id="messageInput" autocomplete="off">
-<button id="sendBtn">➤</button>
-</div>
-</div>
-
-<div class="plusMenu" id="plusMenu">
-<button onclick="alert('📎 Загрузка файла')">📎</button>
-<button onclick="alert('🖼 Галерея')">🖼</button>
-<button onclick="alert('🎤 Голосовой ввод')">🎤</button>
-<button onclick="alert('⚙ Настройки DeepCore')">⚙</button>
-</div>
+<form id="chat-form">
+  <button type="button" id="plus-btn">+</button>
+  <input type="text" id="user-input" placeholder="DeepCore не спит..." autocomplete="off">
+  <button type="submit" id="send-btn">➤</button>
+</form>
 
 <script>
-const chat=document.getElementById("chat");
-const input=document.getElementById("messageInput");
-const sendBtn=document.getElementById("sendBtn");
-const hello=document.getElementById("hello");
+const chat = document.getElementById("chat");
+const form = document.getElementById("chat-form");
+const input = document.getElementById("user-input");
+const menu = document.getElementById("menu");
+const plusBtn = document.getElementById("plus-btn");
 
-let thinking=false;
+/* ===== СЛОВАРЬ ===== */
 
-function toggleTheme(){
-document.body.classList.toggle("light");
-}
-function togglePlus(){
-const menu=document.getElementById("plusMenu");
-menu.style.display=menu.style.display==="flex"?"none":"flex";
-}
-function toggleThink(){
-thinking=!thinking;
-alert("Режим думать: "+(thinking?"ВКЛ":"ВЫКЛ"));
-}
-
-function addMessage(text,type){
-hello.style.display="none";
-const div=document.createElement("div");
-div.className="message "+type;
-chat.appendChild(div);
-if(type==="bot") typeWriter(div,text);
-else div.textContent=text;
-chat.scrollTop=chat.scrollHeight;
-}
-
-function typeWriter(el,text){
-let i=0;
-function typing(){
-if(i<text.length){
-el.textContent+=text[i++];
-chat.scrollTop=chat.scrollHeight;
-setTimeout(typing,12);
-}
-}
-typing();
-}
-
-function random(arr){
-return arr[Math.floor(Math.random()*arr.length)];
-}
-
-function generateResponse(msg){
-msg=msg.toLowerCase();
-
-/* --- Команды --- */
-if(msg==="/help"){
-return "Команды:\n/help\n/Bigresponse\nПривет\nКак дела\nКалькулятор (5+5)";
-}
-
-if(msg==="/bigresponse"){
-return "Квантовый компьютер — это система нового поколения.\nОн использует кубиты.\nКубиты могут быть в суперпозиции.\nТакже существует запутанность.\nЭто позволяет ускорять вычисления.\nПрименяется в криптографии.\nИспользуется в моделировании молекул.\nПока технология нестабильна.\nЕсть проблема шума.\nНо потенциал огромный.\nРазработка активно ведётся.\nБудущее квантовых технологий впечатляет.";
-}
-
-/* --- Привет --- */
-if(msg.includes("привет")||msg.includes("здарова")||msg.includes("хай")||msg.includes("йо")){
-return random([
+const greetings = [
 "Кого я вижу! 😎",
-"О, привет! А я как раз заказывал пиццу, тебе кусочек? 🍕",
-"Ну наконец-то! А то я уже заскучал.",
-"Привет! Как там жизнь молодая?",
-"Мир твоему дому!",
-"Доброго времени суток!",
-"Мое почтение.",
-"Приветствую!",
-"Здравствуй(те)!",
+"Йо!",
 "Салют!",
 "Здарова!",
-"Хай!",
 "О, какие люди!",
-"Здорово, коль не шутишь.",
-"Йо!",
-"Привет-привет!"
-]);
-}
-
-/* --- Как дела --- */
-if(msg.includes("как дела")){
-return random([
-"Лучше всех, а жаловаться грех!",
-"Нормально, как в автобусе — трясет, но едем.",
-"Дела — как сажа бела? Шучу, отлично! 😄",
-"Идут потихоньку, ладно хоть не ползком.",
-"Как в сказке: чем дальше, тем страшнее! 😅",
-"Как у белого человека в пятницу вечером.",
-"Жду зарплату/лето/понедельник (нужное подчеркнуть).",
-"В полном порядке, даже не спрашивай!",
-"Да бывает по-всякому, но держусь.",
-"Могло быть лучше, но судя по всему — не сегодня.",
-"Если честно — устал как собака.",
-"Всё сложно... но интересно!",
-"Дела у прокурора, а у меня делишки. А у тебя?",
-"Есть две новости: хорошая и плохая. С какой начнем?",
-"А что, уже спрашивают?",
-"Жаловаться не буду, но похвастаться нечем. А у тебя как?"
-]);
-}
-
-/* --- Калькулятор --- */
-if(/^\d+[\+\-\*\/]\d+$/.test(msg)){
-return eval(msg).toString();
-}
-
-/* --- Непонятная речь --- */
-return random([
-"Можно чуть понятнее?",
-"Повтори, я завис на секунду 😅",
-"Расшифруй мысль.",
-"Интересно, но можно конкретнее?",
-"Я уловил что-то важное… уточни.",
-"Ты меня заинтриговал. Продолжай.",
-"Хм… звучит загадочно.",
-"Поясни, а то мой словарь задумался.",
-"Это намёк или философия? 😎"
-]);
-}
-
-function showThinking(callback){
-if(thinking){
-const think=document.createElement("div");
-think.className="message bot";
-think.textContent="Думаю...";
-chat.appendChild(think);
-chat.scrollTop=chat.scrollHeight;
-setTimeout(()=>{think.remove();callback();},2000);
-}else{
-const dots=document.createElement("div");
-dots.className="message bot typingDots";
-dots.innerHTML="<span></span><span></span><span></span>";
-chat.appendChild(dots);
-chat.scrollTop=chat.scrollHeight;
-setTimeout(()=>{dots.remove();callback();},5000);
-}
-}
-
-function sendMessage(){
-let msg=input.value.trim();
-if(!msg) return;
-addMessage(msg,"user");
-input.value="";
-sendBtn.style.display="none";
-showThinking(()=>addMessage(generateResponse(msg),"bot"));
-}
-
-sendBtn.onclick=sendMessage;
-
-input.addEventListener("input",()=>{
-sendBtn.style.display=input.value.trim()?"block":"none";
-});
-input.addEventListener("keypress",e=>{
-if(e.key==="Enter") sendMessage();
-});
-
-/* Placeholder */
-const phrases=[
-"DeepCore не спит",
-"DeepCore крутой",
-"Кстати, DeepCore 4.1 v6",
-"Спрашивай что угодно",
-"DeepCore лучший друг ChatGPT",
-"DeepCore шарит 😎",
-"DeepCore рил мощный ИИ, да да",
-"Спроси что-нибудь умное",
-"Попробуй /Bigresponse 🚀"
+"Привет-привет!",
+"Мир твоему дому!"
 ];
 
-let p=0,c=0,del=false;
-function animatePlaceholder(){
-let current=phrases[p];
-if(!del){
-input.placeholder=current.slice(0,++c);
-if(c===current.length){del=true;setTimeout(animatePlaceholder,1200);return;}
-}else{
-input.placeholder=current.slice(0,--c);
-if(c===0){del=false;p=(p+1)%phrases.length;}
+const howAreYou = [
+"Лучше всех, а жаловаться грех!",
+"Нормально, как в автобусе — трясет, но едем.",
+"Всё сложно... но интересно!",
+"Дела у прокурора, а у меня делишки. А у тебя?",
+"Есть две новости: хорошая и плохая. С какой начнем?"
+];
+
+const unknownReplies = [
+"Бро… ты сейчас на каком языке говорил? 😅",
+"Я уловил сигнал, но смысл потерялся.",
+"Повтори по-человечески 😎",
+"DeepCore шарит, но не настолько.",
+"Это был код? Или заклинание?"
+];
+
+/* ===== АНИМАЦИЯ ПЕЧАТИ ===== */
+
+function typeText(element, text, speed = 18) {
+  element.classList.add("typing");
+  element.textContent = "";
+  let i = 0;
+
+  function typing() {
+    if (i < text.length) {
+      element.textContent += text.charAt(i);
+      i++;
+      setTimeout(typing, speed);
+      chat.scrollTop = chat.scrollHeight;
+    } else {
+      element.classList.remove("typing");
+    }
+  }
+
+  typing();
 }
-setTimeout(animatePlaceholder,60);
+
+/* ===== ДОБАВЛЕНИЕ СООБЩЕНИЙ ===== */
+
+function addMessage(text, sender) {
+  const msg = document.createElement("div");
+  msg.className = sender === "user" ? "user-message" : "bot-message";
+  chat.appendChild(msg);
+
+  if (sender === "bot") {
+    typeText(msg, text);
+  } else {
+    msg.textContent = text;
+  }
+
+  chat.scrollTop = chat.scrollHeight;
 }
-animatePlaceholder();
+
+/* ===== ЛОГИКА ОТВЕТОВ ===== */
+
+function generateResponse(text) {
+  text = text.toLowerCase();
+
+  if (text === "/help") {
+    addMessage("Доступные команды:\n/help\n/Bigresponse\nПопробуй что-нибудь 😉", "bot");
+    return;
+  }
+
+  if (text === "/bigresponse") {
+    addMessage("🚀 BIG MODE АКТИВИРОВАН\n\nDeepCore 4.2 v7\nСистема стабильна.\nСловарный запас расширен.\nГотов к сложным вопросам.\nСпрашивай что-нибудь умное 😎", "bot");
+    return;
+  }
+
+  if (text.includes("привет") || text.includes("йо") || text.includes("здарова")) {
+    addMessage(randomFrom(greetings), "bot");
+    return;
+  }
+
+  if (text.includes("как дела")) {
+    addMessage(randomFrom(howAreYou), "bot");
+    return;
+  }
+
+  addMessage(randomFrom(unknownReplies), "bot");
+}
+
+function randomFrom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/* ===== СОБЫТИЯ ===== */
+
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+  addMessage(text, "user");
+  generateResponse(text);
+  input.value = "";
+});
+
+plusBtn.addEventListener("click", function() {
+  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+});
+
+function insertText(text) {
+  input.value = text;
+  menu.style.display = "none";
+  input.focus();
+}
 </script>
 
 </body>
