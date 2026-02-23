@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DeepCore</title>
+<title>DeepCore 3.6</title>
 
 <style>
 :root{
@@ -11,7 +11,15 @@
 --input:#1b1b1b;
 --text:#ffffff;
 --user:#d9d9d9;
---border:#ffffff33;
+--accent:#ffffff;
+}
+
+.light{
+--bg:#f4f4f4;
+--input:#ffffff;
+--text:#000000;
+--user:#dcdcdc;
+--accent:#000000;
 }
 
 body{
@@ -22,13 +30,17 @@ color:var(--text);
 display:flex;
 flex-direction:column;
 height:100vh;
+transition:0.3s;
 }
 
 header{
 padding:15px;
 text-align:center;
 font-weight:bold;
-border-bottom:1px solid var(--border);
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid #444;
 }
 
 #chat{
@@ -38,7 +50,8 @@ padding:20px;
 }
 
 .message{
-margin:12px 0;
+margin:10px 0;
+max-width:80%;
 white-space:pre-wrap;
 line-height:1.6;
 }
@@ -47,44 +60,27 @@ line-height:1.6;
 background:var(--user);
 color:#000;
 padding:10px 14px;
-border-radius:12px;
-max-width:80%;
+border-radius:14px;
 margin-left:auto;
 }
 
 .bot{
-max-width:90%;
-}
-
-.actions{
-display:flex;
-gap:12px;
-margin-top:6px;
-opacity:0.8;
-}
-
-.actions span{
-cursor:pointer;
-border:1px solid #fff;
-border-radius:50%;
-padding:6px;
-font-size:14px;
+padding:4px 0;
 }
 
 .inputArea{
 padding:12px;
-border-top:1px solid var(--border);
-background:var(--bg);
+border-top:1px solid #444;
 }
 
 .inputBox{
 display:flex;
+gap:8px;
 align-items:center;
-gap:10px;
 background:var(--input);
-border:1px solid #fff;
+border:1px solid var(--accent);
 border-radius:30px;
-padding:10px 15px;
+padding:8px 14px;
 }
 
 #messageInput{
@@ -92,224 +88,186 @@ flex:1;
 background:transparent;
 border:none;
 outline:none;
-color:#fff;
+color:var(--text);
 font-size:16px;
+}
+
+button{
+cursor:pointer;
+border-radius:50%;
+width:36px;
+height:36px;
+border:1px solid var(--accent);
+background:transparent;
+color:var(--text);
 }
 
 #sendBtn{
 display:none;
-background:#fff;
-color:#000;
-border:none;
-border-radius:50%;
-width:36px;
-height:36px;
-cursor:pointer;
-}
-
-#plusBtn{
-background:transparent;
-border:1px solid #fff;
-border-radius:50%;
-width:36px;
-height:36px;
-color:#fff;
-cursor:pointer;
+background:var(--accent);
+color:var(--bg);
 }
 
 .thinking{
-display:flex;
-gap:5px;
-margin-top:10px;
-}
-
-.dot{
-width:8px;
-height:8px;
-background:#fff;
-border-radius:50%;
-animation:bounce 1.2s infinite;
-}
-
-.dot:nth-child(2){animation-delay:.2s}
-.dot:nth-child(3){animation-delay:.4s}
-
-@keyframes bounce{
-0%,80%,100%{transform:scale(0)}
-40%{transform:scale(1)}
-}
-
-.typing span{
-opacity:0;
-animation:fadeIn .03s forwards;
-}
-
-@keyframes fadeIn{
-to{opacity:1}
+font-style:italic;
+opacity:0.7;
+margin:5px 0;
 }
 </style>
 </head>
 <body>
 
-<header>DeepCore 🚀</header>
+<header>
+<span>DeepCore 🚀</span>
+<button onclick="toggleTheme()">🌓</button>
+</header>
 
 <div id="chat"></div>
 
 <div class="inputArea">
 <div class="inputBox">
-<button id="plusBtn">+</button>
+<button onclick="alert('Плюс работает 😎')">+</button>
+<button onclick="thinkMode()">🧠</button>
 <input id="messageInput" autocomplete="off">
 <button id="sendBtn">➤</button>
 </div>
 </div>
 
 <script>
+const chat = document.getElementById("chat");
 const input = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
-const chat = document.getElementById("chat");
 
-const phrases = [
-"DeepCore не спит",
-"DeepCore лучший друг ChatGPT",
-"DeepCore рил мощный ИИ, да да",
-"Кстати, DeepCore сейчас модель 5",
-"DeepCore шарит",
-"DeepCore крутой"
-];
+let thinkingEnabled=false;
 
-let phraseIndex = 0;
-
-function animatePlaceholder(){
-let text = phrases[phraseIndex];
-let i=0;
-input.placeholder="";
-let typing = setInterval(()=>{
-if(i<text.length){
-input.placeholder+=text[i];
-i++;
-}else{
-clearInterval(typing);
-setTimeout(()=>{
-erasePlaceholder();
-},10000);
-}
-},50);
+function toggleTheme(){
+document.body.classList.toggle("light");
 }
 
-function erasePlaceholder(){
-let text = input.placeholder;
-let i=text.length;
-let erase = setInterval(()=>{
-if(i>0){
-input.placeholder=text.substring(0,i-1);
-i--;
-}else{
-clearInterval(erase);
-phraseIndex=(phraseIndex+1)%phrases.length;
-setTimeout(animatePlaceholder,500);
-}
-},30);
-}
+function addMessage(text,type){
+const div=document.createElement("div");
+div.className="message "+type;
+chat.appendChild(div);
 
-animatePlaceholder();
-
-input.addEventListener("input",()=>{
-sendBtn.style.display = input.value.trim() ? "block":"none";
-});
-
-function addMessage(text, sender){
-const div = document.createElement("div");
-div.className="message "+sender;
-
-if(sender==="bot"){
-typeText(div,text);
+if(type==="bot"){
+typeWriter(div,text);
 }else{
 div.textContent=text;
 }
-chat.appendChild(div);
+
 chat.scrollTop=chat.scrollHeight;
 }
 
-function typeText(element,text){
+function typeWriter(el,text){
 let i=0;
-element.innerHTML="";
-let span;
-function type(){
+function typing(){
 if(i<text.length){
-span=document.createElement("span");
-span.textContent=text[i];
-element.appendChild(span);
+el.textContent+=text[i];
 i++;
-setTimeout(type,15);
-}else{
-addActions(element);
+setTimeout(typing,18);
 }
 }
-type();
+typing();
 }
 
-function addActions(element){
-const actions=document.createElement("div");
-actions.className="actions";
-actions.innerHTML="⬜ 👍 👎 🔄";
-element.appendChild(actions);
-}
-
-function thinkingAnimation(callback){
-const thinking=document.createElement("div");
-thinking.className="thinking";
-thinking.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-chat.appendChild(thinking);
-chat.scrollTop=chat.scrollHeight;
-
-setTimeout(()=>{
-thinking.remove();
-callback();
-},4000);
+function thinkMode(){
+thinkingEnabled=!thinkingEnabled;
+alert("Режим думать: "+(thinkingEnabled?"ВКЛ":"ВЫКЛ"));
 }
 
 function generateResponse(msg){
 msg=msg.toLowerCase();
 
+function random(arr){
+return arr[Math.floor(Math.random()*arr.length)];
+}
+
+const dictionary = {
+
+"привет": () => random([
+"Кого я вижу! 😎",
+"О, привет! А я как раз заказывал пиццу, тебе кусочек? 🍕",
+"Ну наконец-то! А то я уже заскучал.",
+"Привет! Как там жизнь молодая?",
+"Мир твоему дому!",
+"Доброго времени суток!",
+"Мое почтение.",
+"Приветствую!",
+"Здравствуй(те)!",
+"Салют!",
+"Здарова!",
+"Хай!",
+"О, какие люди!",
+"Здорово, коль не шутишь.",
+"Йо!",
+"Привет-привет!"
+]),
+
+"здарова": () => dictionary["привет"](),
+"хай": () => dictionary["привет"](),
+"йо": () => dictionary["привет"](),
+
+"как дела": () => random([
+"Дела — как сажа бела? Шучу, отлично! 😄",
+"Лучше всех, а жаловаться грех!",
+"Идут потихоньку, ладно хоть не ползком.",
+"Как в сказке: чем дальше, тем страшнее! 😅",
+"Как у белого человека в пятницу вечером.",
+"Нормально, как в автобусе — трясет, но едем.",
+"Жду зарплату/лето/понедельник (нужное подчеркнуть).",
+"В полном порядке, даже не спрашивай!",
+"Да бывает по-всякому, но держусь.",
+"Могло быть лучше, но судя по всему — не сегодня.",
+"Если честно — устал как собака.",
+"Всё сложно... но интересно!",
+"Дела у прокурора, а у меня делишки. А у тебя?",
+"Есть две новости: хорошая и плохая. С какой начнем?",
+"А что, уже спрашивают?",
+"Жаловаться не буду, но похвастаться нечем. А у тебя как?"
+]),
+
+"непонятно": () => random([
+"Что именно тебе интересно? Могу развернуть мысль.",
+"Ага, вот тут самый сок! Короче, дело было так...",
+"В двух словах и не расскажешь, но если хочешь, могу загрузить подробностями.",
+"Давай остановимся на этом поподробнее, потому что это важно.",
+"Чувствую, что ты хочешь спросить: \"А что было дальше?\"",
+"Прости, ты сказал что-то важное? Я заслушался соловьями.",
+"Переспроси, пожалуйста, а то я ушел в себя и скоро вернусь.",
+"Вы меня смутили своей загадочностью. Можно чуть понятнее?",
+"Давай-ка поподробнее, а то я не уловил суть.",
+"Повтори, я ослышался (или завис на пару секунд).",
+"Ты сейчас издал такой звук, что мой внутренний словарь дал сбой. Расшифруй.",
+"Интересно, конечно, но не хочешь ли ты спросить меня о чём-то конкретном?",
+"А можно ту же мысль, только в студию?",
+"Кстати, о птичках...",
+"Пока не забыл...",
+"А как тебе вообще такая погода?",
+"Слушай, а что ты думаешь по поводу...",
+"Переводя стрелки с больной головы на здоровую..."
+])
+
+}; 
+
+if(dictionary[msg]) return dictionary[msg];
+
 if(msg==="/help"){
-return `Я DeepCore 😎
-
-Мои функции:
-/help
-✖️ Калькулятор
-Текст наоборот
-Переводчик
-
-Я развиваюсь 😈`;
+return "Команды:\n/help\n/bigresponse\nПример калькулятора: 5+5";
 }
 
 if(msg==="/bigresponse"){
-return `Квантовая физика — это раздел физики, изучающий поведение частиц на микроскопическом уровне.
-Она описывает мир атомов и элементарных частиц.
-Законы классической физики там не работают привычным образом.
-Частицы могут вести себя как волны.
-Они могут находиться в нескольких состояниях одновременно.
-Существует явление суперпозиции.
-Также есть квантовая запутанность.
-Это означает связь частиц независимо от расстояния.
-Квантовые эффекты лежат в основе современной электроники.
-Лазеры, транзисторы и МРТ работают благодаря этим законам.
-Квантовая теория изменила наше понимание реальности.
-Она объясняет строение атома.
-Помогает моделировать молекулы.
-Используется в разработке квантовых компьютеров.
-Хотя теория сложная, она экспериментально подтверждена.
-Это одна из самых точных теорий в истории науки.
-Но до сих пор остаётся много загадок.
-Учёные продолжают исследования.
-Будущее квантовых технологий выглядит многообещающе.`;
+return "Квантовая физика — это сложная область науки.\nОна изучает мир элементарных частиц.\nРаботает иначе чем классическая физика.\nСодержит суперпозицию и запутанность.\nИменно она лежит в основе современных технологий.";
 }
 
 if(/^\d+[\+\-\*\/]\d+$/.test(msg)){
 return eval(msg).toString();
 }
 
-return "Интересный вопрос 😎 Расскажи подробнее.";
+if(msg===""){
+return "Скажи что-нибудь 😎";
+}
+
+return "Интересно 🤔 Расскажи подробнее.";
 }
 
 function sendMessage(){
@@ -320,17 +278,40 @@ addMessage(msg,"user");
 input.value="";
 sendBtn.style.display="none";
 
-thinkingAnimation(()=>{
+if(thinkingEnabled){
+const think=document.createElement("div");
+think.className="thinking";
+think.textContent="DeepCore думает...";
+chat.appendChild(think);
+chat.scrollTop=chat.scrollHeight;
+
+setTimeout(()=>{
+think.remove();
 let response=generateResponse(msg);
 addMessage(response,"bot");
-});
+},2000);
+
+}else{
+setTimeout(()=>{
+let response=generateResponse(msg);
+addMessage(response,"bot");
+},600);
+}
 }
 
 sendBtn.onclick=sendMessage;
+
+input.addEventListener("input",()=>{
+sendBtn.style.display=input.value.trim()?"block":"none";
+});
+
 input.addEventListener("keypress",e=>{
 if(e.key==="Enter") sendMessage();
 });
+
+addMessage("Привет, я DeepCore 😎","bot");
+addMessage("Чем могу помочь вам сегодня?","bot");
 </script>
 
 </body>
-</html>
+  </html>
