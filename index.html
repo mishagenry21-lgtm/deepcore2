@@ -7,21 +7,17 @@
 
 <style>
 :root{
---bg:#ffffff;
+--bg:#e6e6e6;
 --text:#000;
---bot:#000;
---user:#1e90ff;
---border:#000;
---input:#f3f3f3;
+--user:#d9d9d9;
+--border:#fff;
 }
 
 .dark{
 --bg:#0f0f0f;
 --text:#fff;
---bot:#111;
---user:#2563eb;
+--user:#2a2a2a;
 --border:#fff;
---input:#1a1a1a;
 }
 
 body{
@@ -29,145 +25,128 @@ margin:0;
 font-family:system-ui;
 background:var(--bg);
 color:var(--text);
+height:100vh;
 display:flex;
 flex-direction:column;
-height:100vh;
-transition:0.3s;
+transition:.3s;
 }
 
 header{
 display:flex;
 justify-content:space-between;
-align-items:center;
-padding:10px 15px;
-border-bottom:1px solid var(--border);
+padding:12px;
 }
 
 button{
-background:none;
+border-radius:50%;
 border:1px solid var(--border);
+background:var(--bg);
 color:var(--text);
-padding:6px 12px;
-border-radius:8px;
+width:36px;
+height:36px;
 cursor:pointer;
-transition:0.3s;
 }
 
 #chat{
 flex:1;
 overflow-y:auto;
-padding:15px;
+padding:20px;
 display:flex;
 flex-direction:column;
-gap:12px;
+gap:14px;
+}
+
+.logo{
+text-align:center;
+opacity:.3;
+margin-top:40px;
 }
 
 .msg{
 max-width:75%;
-padding:10px 14px;
-border-radius:16px;
-position:relative;
-animation:fade 0.4s ease forwards;
+font-size:15px;
+animation:fade .3s ease forwards;
 }
 
 .user{
 align-self:flex-end;
 background:var(--user);
-color:#fff;
+padding:10px 14px;
+border-radius:16px;
 }
 
 .bot{
 align-self:flex-start;
-background:var(--bot);
-color:#fff;
 }
 
-.msg-actions{
+.actions{
 display:flex;
-gap:8px;
-font-size:12px;
-opacity:0.6;
+gap:6px;
 margin-top:5px;
 }
 
-.msg-actions span{
-cursor:pointer;
-}
-
-@keyframes fade{
-from{opacity:0;transform:translateY(8px);}
-to{opacity:1;transform:translateY(0);}
-}
-
-.typing{
-display:flex;
-gap:5px;
-align-self:flex-start;
-margin-bottom:10px;
-}
-
-.dot{
-width:7px;
-height:7px;
+.actions span{
+width:28px;
+height:28px;
 border-radius:50%;
-background:var(--text);
-animation:bounce 1.2s infinite;
-}
-
-.dot:nth-child(2){animation-delay:0.2s;}
-.dot:nth-child(3){animation-delay:0.4s;}
-
-@keyframes bounce{
-0%,80%,100%{transform:translateY(0);}
-40%{transform:translateY(-8px);}
-}
-
-.thinking{
-align-self:flex-start;
-font-size:12px;
-opacity:0.4;
-position:relative;
-overflow:hidden;
-}
-
-.thinking::after{
-content:"";
-position:absolute;
-top:0;left:-100%;
-width:100%;height:100%;
-background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);
-animation:shine 1.5s infinite;
-}
-
-@keyframes shine{
-100%{left:100%;}
+display:flex;
+align-items:center;
+justify-content:center;
+border:1px solid #fff;
+background:var(--bg);
+cursor:pointer;
+font-size:13px;
 }
 
 footer{
 display:flex;
+gap:6px;
 padding:10px;
-gap:5px;
-border-top:1px solid var(--border);
 }
 
 input{
 flex:1;
 padding:10px;
-border-radius:10px;
-border:1px solid var(--border);
-background:var(--input);
-color:var(--text);
+border-radius:12px;
+border:1px solid #ccc;
 outline:none;
+background:#fff;
 }
 
 #send{
-background:gray;
-color:black;
+opacity:.5;
+transition:.3s;
 }
 
 #send.active{
-background:white;
-color:black;
+opacity:1;
+}
+
+.typing{
+display:flex;
+gap:5px;
+margin-left:5px;
+}
+
+.dot{
+width:6px;
+height:6px;
+border-radius:50%;
+background:var(--text);
+animation:bounce 1.4s infinite;
+}
+
+.dot:nth-child(2){animation-delay:.2s;}
+.dot:nth-child(3){animation-delay:.4s;}
+
+@keyframes bounce{
+0%,80%,100%{transform:translateY(0);}
+40%{transform:translateY(-6px);}
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(5px);}
+to{opacity:1;transform:translateY(0);}
 }
 </style>
 </head>
@@ -176,19 +155,25 @@ color:black;
 
 <header>
 <div>
-<button onclick="toggleMenu()">☰</button>
+<button onclick="toggleChats()">☰</button>
 <button onclick="newChat()">＋</button>
 </div>
 <button onclick="toggleTheme()">🌓</button>
 </header>
 
-<div id="chat"></div>
+<div id="chat">
+<div class="logo">
+<h2>Привет, я DeepCore</h2>
+<p>Чем могу помочь вам сегодня?</p>
+</div>
+</div>
 
 <footer>
-<input type="file" id="file" hidden>
-<button onclick="upload()">＋</button>
-<input id="input" placeholder="Спросить DeepCore">
-<button id="send" disabled>➤</button>
+<input id="input" placeholder='Спросить DeepCore
+"А вы знали что DeepCore создал Миша? 😎"
+"DeepCore рил мощный ИИ"
+"DeepCore лучший друг ChatGPT"'>
+<button id="send">➤</button>
 </footer>
 
 <script>
@@ -196,19 +181,19 @@ const input=document.getElementById("input");
 const send=document.getElementById("send");
 const chat=document.getElementById("chat");
 
-let chats=JSON.parse(localStorage.getItem("deepcoreChats"))||[];
-let currentChat=[];
+let chats=JSON.parse(localStorage.getItem("deepcore_chats"))||[];
+let current=[];
 
-function saveChats(){
-localStorage.setItem("deepcoreChats",JSON.stringify(chats));
+function save(){
+localStorage.setItem("deepcore_chats",JSON.stringify(chats));
 }
 
 function newChat(){
-if(currentChat.length>0){
-chats.push(currentChat);
-saveChats();
+if(current.length){
+chats.push(current);
+save();
 }
-currentChat=[];
+current=[];
 chat.innerHTML="";
 }
 
@@ -216,77 +201,38 @@ function toggleTheme(){
 document.body.classList.toggle("dark");
 }
 
-function upload(){
-document.getElementById("file").click();
-}
-
-document.getElementById("file").onchange=function(){
-addMessage("📸 Фото загружено (визуально 😅)","user");
-};
-
 input.addEventListener("input",()=>{
-if(input.value.trim()){
-send.disabled=false;
-send.classList.add("active");
-}else{
-send.disabled=true;
-send.classList.remove("active");
-}
+send.classList.toggle("active",input.value.trim().length>0);
 });
 
 send.onclick=()=>{
 if(!input.value.trim())return;
-addMessage(input.value,"user");
-currentChat.push({role:"user",text:input.value});
-const text=input.value;
+addMsg(input.value,"user");
+current.push({u:input.value});
+let text=input.value;
 input.value="";
-send.disabled=true;
-send.classList.remove("active");
 showTyping();
 setTimeout(()=>{
 removeTyping();
-let response=generateResponse(text);
-addMessage(response,"bot",true);
-currentChat.push({role:"bot",text:response});
-},3000+Math.random()*2000);
+let r=generate(text);
+addMsg(r,"bot",true);
+current.push({b:r});
+},4000);
 };
 
-function addMessage(text,type,actions=false){
+function addMsg(text,type,actions=false){
 const msg=document.createElement("div");
 msg.className="msg "+type;
+msg.textContent=text;
 chat.appendChild(msg);
 
-let i=0;
-const interval=setInterval(()=>{
-msg.textContent+=text[i];
-i++;
-if(i>=text.length){
-clearInterval(interval);
 if(actions){
-addActions(msg,text);
+const act=document.createElement("div");
+act.className="actions";
+act.innerHTML="<span>📋</span><span>👍</span><span>👎</span><span>⋯</span>";
+msg.appendChild(act);
 }
-}
-},15);
-
 chat.scrollTop=chat.scrollHeight;
-}
-
-function addActions(msg,text){
-const actions=document.createElement("div");
-actions.className="msg-actions";
-actions.innerHTML=`
-<span onclick="copyText(this,'${text.replace(/'/g,"")}')">📋</span>
-<span>👍</span>
-<span>👎</span>
-<span>⋯</span>
-`;
-msg.appendChild(actions);
-}
-
-function copyText(el,text){
-navigator.clipboard.writeText(text);
-el.textContent="✔";
-setTimeout(()=>el.textContent="📋",1000);
 }
 
 function showTyping(){
@@ -295,53 +241,65 @@ t.className="typing";
 t.id="typing";
 t.innerHTML="<div class='dot'></div><div class='dot'></div><div class='dot'></div>";
 chat.appendChild(t);
-
-const think=document.createElement("div");
-think.className="thinking";
-think.id="thinking";
-think.textContent="Думаю";
-chat.appendChild(think);
 }
 
 function removeTyping(){
 document.getElementById("typing")?.remove();
-document.getElementById("thinking")?.remove();
 }
 
-function generateResponse(text){
-text=text.toLowerCase();
-
-const dictionary={
-"привет":"Привет 😎 Чем займёмся?",
-"кто ты":"Я DeepCore. Локальный ИИ нового поколения 🚀",
-"как дела":"Работаю стабильно. А у тебя как?",
-"что умеешь":"Попробуй /help 😏",
-"пока":"Не пропадай 👀",
-};
-
-if(dictionary[text])return dictionary[text];
-
-if(text==="/help"){
-return "Команды:\n/help\n/calc 2+2\n/reverse текст\n/count текст\n/translate hello";
+function random(arr){
+return arr[Math.floor(Math.random()*arr.length)];
 }
 
-if(text.startsWith("/calc")){
-try{return eval(text.replace("/calc",""));}catch{return "Ошибка";}
+function generate(text){
+let t=text.toLowerCase();
+
+const hello=[
+"Кого я вижу!",
+"О, привет! А я как раз заказывал пиццу, тебе кусочек?",
+"Ну наконец-то! А то я уже заскучал.",
+"Привет! Как там жизнь молодая?",
+"Мир твоему дому!",
+"Доброго времени суток!",
+"Мое почтение.",
+"Приветствую!",
+"Салют!",
+"Йо!"
+];
+
+const how=[
+"Лучше всех, а жаловаться грех!",
+"Идут потихоньку, ладно хоть не ползком.",
+"Как в автобусе — трясет, но едем.",
+"В полном порядке!",
+"Да бывает по-всякому, но держусь."
+];
+
+if(t.includes("привет")) return random(hello);
+if(t.includes("как дела")) return random(how);
+
+if(t==="/help"){
+return `Я DeepCore 😎
+Мои функции:
+/help
+• ✖️ Калькулятор
+• Текст наоборот
+• Переводчик
+
+Я развиваюсь 😈`;
 }
 
-if(text.startsWith("/reverse")){
-return text.replace("/reverse","").split("").reverse().join("");
+if(/^[0-9+\-*/(). ]+$/.test(t)){
+try{return eval(t);}catch{return "Ошибка вычисления";}
 }
 
-if(text.startsWith("/count")){
-return "Символов: "+text.replace("/count","").length;
+if(t.startsWith("переверни")){
+return t.replace("переверни","").split("").reverse().join("");
 }
 
-if(text.startsWith("/translate")){
-return "Перевод работает в демо режиме 🌐";
+if(t.startsWith("переведи")){
+return "🌐 Переводчик в демо режиме.";
 }
-
-if(text.includes("миша"))return "Создатель легенды 😎";
 
 return "Интересно... расскажи подробнее.";
 }
