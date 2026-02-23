@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DeepCore 4.1</title>
+<title>DeepCore 4.2</title>
 
 <style>
 :root{
@@ -13,7 +13,6 @@
 --accent:#fff;
 --bubble:#2a2a2a;
 }
-
 .light{
 --bg:#f4f4f4;
 --input:#fff;
@@ -21,7 +20,6 @@
 --accent:#000;
 --bubble:#e5e5e5;
 }
-
 body{
 margin:0;
 font-family:system-ui;
@@ -32,7 +30,6 @@ flex-direction:column;
 height:100vh;
 transition:.3s;
 }
-
 header{
 padding:15px;
 display:flex;
@@ -40,7 +37,6 @@ justify-content:space-between;
 align-items:center;
 border-bottom:1px solid #444;
 }
-
 #chat{
 flex:1;
 overflow-y:auto;
@@ -48,36 +44,30 @@ padding:20px;
 display:flex;
 flex-direction:column;
 }
-
 .centerHello{
 margin:auto;
 text-align:center;
 opacity:.9;
 }
-
 .message{
 margin:8px 0;
 max-width:85%;
 white-space:pre-wrap;
 line-height:1.6;
 }
-
 .user{
 background:var(--bubble);
 padding:10px 14px;
 border-radius:14px;
 margin-left:auto;
 }
-
 .bot{
 padding:4px 0;
 }
-
 .inputArea{
 padding:12px;
 border-top:1px solid #444;
 }
-
 .inputBox{
 display:flex;
 align-items:center;
@@ -87,7 +77,6 @@ border-radius:30px;
 padding:8px 14px;
 border:1px solid var(--accent);
 }
-
 #messageInput{
 flex:1;
 background:transparent;
@@ -96,7 +85,6 @@ outline:none;
 color:var(--text);
 font-size:16px;
 }
-
 button{
 width:36px;
 height:36px;
@@ -106,13 +94,11 @@ background:transparent;
 color:var(--text);
 cursor:pointer;
 }
-
 #sendBtn{
 display:none;
 background:var(--accent);
 color:var(--bg);
 }
-
 .typingDots span{
 display:inline-block;
 width:6px;
@@ -122,18 +108,15 @@ background:var(--text);
 border-radius:50%;
 animation:jump 1s infinite;
 }
-
 .typingDots span:nth-child(2){animation-delay:.2s}
 .typingDots span:nth-child(3){animation-delay:.4s}
-
 @keyframes jump{
 0%,80%,100%{transform:translateY(0)}
 40%{transform:translateY(-6px)}
 }
-
 .plusMenu{
 position:absolute;
-bottom:70px;
+bottom:80px;
 left:20px;
 background:var(--input);
 border:1px solid var(--accent);
@@ -169,10 +152,10 @@ gap:8px;
 </div>
 
 <div class="plusMenu" id="plusMenu">
-<button onclick="alert('Загрузка файла')">📎</button>
-<button onclick="alert('Галерея')">🖼</button>
-<button onclick="alert('Голосовой ввод')">🎤</button>
-<button onclick="alert('Настройки DeepCore')">⚙</button>
+<button onclick="alert('📎 Загрузка файла')">📎</button>
+<button onclick="alert('🖼 Галерея')">🖼</button>
+<button onclick="alert('🎤 Голосовой ввод')">🎤</button>
+<button onclick="alert('⚙ Настройки DeepCore')">⚙</button>
 </div>
 
 <script>
@@ -186,12 +169,10 @@ let thinking=false;
 function toggleTheme(){
 document.body.classList.toggle("light");
 }
-
 function togglePlus(){
 const menu=document.getElementById("plusMenu");
 menu.style.display=menu.style.display==="flex"?"none":"flex";
 }
-
 function toggleThink(){
 thinking=!thinking;
 alert("Режим думать: "+(thinking?"ВКЛ":"ВЫКЛ"));
@@ -207,7 +188,6 @@ else div.textContent=text;
 chat.scrollTop=chat.scrollHeight;
 }
 
-/* Анимация текста как у ChatGPT */
 function typeWriter(el,text){
 let i=0;
 function typing(){
@@ -227,43 +207,16 @@ return arr[Math.floor(Math.random()*arr.length)];
 function generateResponse(msg){
 msg=msg.toLowerCase();
 
-/* --- команды --- */
+/* --- Команды --- */
 if(msg==="/help"){
-return `Команды DeepCore:
-
-/help — список команд
-/Bigresponse — большой ответ 15+ строк
-
-Также:
-• Работает калькулятор (пример: 5+5)
-• Реагирую на "привет"
-• Реагирую на "как дела"`;
+return "Команды:\n/help\n/Bigresponse\nПривет\nКак дела\nКалькулятор (5+5)";
 }
 
 if(msg==="/bigresponse"){
-return `Квантовый компьютер — это вычислительная система нового поколения.
-Он работает не с обычными битами, а с кубитами.
-Кубиты могут находиться в состоянии суперпозиции.
-Это означает одновременное существование 0 и 1.
-Также существует явление квантовой запутанности.
-Частицы могут быть связаны независимо от расстояния.
-Такие эффекты позволяют выполнять параллельные вычисления.
-Квантовые алгоритмы отличаются от классических.
-Например, алгоритм Шора ускоряет факторизацию чисел.
-Это может повлиять на современную криптографию.
-Квантовые системы крайне чувствительны к шуму.
-Поэтому требуется коррекция ошибок.
-Учёные создают стабильные кубиты.
-Используются сверхпроводники и ионные ловушки.
-Технология пока развивается.
-Но потенциал у неё огромный.
-В будущем квантовые компьютеры могут изменить науку.
-Они помогут моделировать молекулы.
-Оптимизировать сложные процессы.
-И решать задачи, невозможные для обычных ПК.`;
+return "Квантовый компьютер — это система нового поколения.\nОн использует кубиты.\nКубиты могут быть в суперпозиции.\nТакже существует запутанность.\nЭто позволяет ускорять вычисления.\nПрименяется в криптографии.\nИспользуется в моделировании молекул.\nПока технология нестабильна.\nЕсть проблема шума.\nНо потенциал огромный.\nРазработка активно ведётся.\nБудущее квантовых технологий впечатляет.";
 }
 
-/* --- словарь --- */
+/* --- Привет --- */
 if(msg.includes("привет")||msg.includes("здарова")||msg.includes("хай")||msg.includes("йо")){
 return random([
 "Кого я вижу! 😎",
@@ -282,21 +235,18 @@ return random([
 "Здорово, коль не шутишь.",
 "Йо!",
 "Привет-привет!"
-"Привет! Как там жизнь молодая?",
-"Мир твоему дому!"
 ]);
 }
 
+/* --- Как дела --- */
 if(msg.includes("как дела")){
 return random([
 "Лучше всех, а жаловаться грех!",
 "Нормально, как в автобусе — трясет, но едем.",
 "Дела — как сажа бела? Шучу, отлично! 😄",
-"Лучше всех, а жаловаться грех!",
 "Идут потихоньку, ладно хоть не ползком.",
 "Как в сказке: чем дальше, тем страшнее! 😅",
 "Как у белого человека в пятницу вечером.",
-"Нормально, как в автобусе — трясет, но едем.",
 "Жду зарплату/лето/понедельник (нужное подчеркнуть).",
 "В полном порядке, даже не спрашивай!",
 "Да бывает по-всякому, но держусь.",
@@ -307,25 +257,26 @@ return random([
 "Есть две новости: хорошая и плохая. С какой начнем?",
 "А что, уже спрашивают?",
 "Жаловаться не буду, но похвастаться нечем. А у тебя как?"
-"Всё сложно... но интересно!",
-"Есть две новости: хорошая и плохая. С какой начнем?"
 ]);
 }
 
+/* --- Калькулятор --- */
 if(/^\d+[\+\-\*\/]\d+$/.test(msg)){
 return eval(msg).toString();
 }
 
-if(msg.length<2){
+/* --- Непонятная речь --- */
 return random([
 "Можно чуть понятнее?",
-"Ого",
-"Повтори, я завис 😅",
-"Расшифруй мысль."
+"Повтори, я завис на секунду 😅",
+"Расшифруй мысль.",
+"Интересно, но можно конкретнее?",
+"Я уловил что-то важное… уточни.",
+"Ты меня заинтриговал. Продолжай.",
+"Хм… звучит загадочно.",
+"Поясни, а то мой словарь задумался.",
+"Это намёк или философия? 😎"
 ]);
-}
-
-return "Интересный вопрос 😎 Расскажи подробнее.";
 }
 
 function showThinking(callback){
@@ -358,14 +309,13 @@ showThinking(()=>addMessage(generateResponse(msg),"bot"));
 sendBtn.onclick=sendMessage;
 
 input.addEventListener("input",()=>{
-sendBtn.style.display=input.value?"block":"none";
+sendBtn.style.display=input.value.trim()?"block":"none";
 });
-
 input.addEventListener("keypress",e=>{
 if(e.key==="Enter") sendMessage();
 });
 
-/* Placeholder анимация */
+/* Placeholder */
 const phrases=[
 "DeepCore не спит",
 "DeepCore крутой",
@@ -379,12 +329,11 @@ const phrases=[
 ];
 
 let p=0,c=0,del=false;
-
 function animatePlaceholder(){
 let current=phrases[p];
 if(!del){
 input.placeholder=current.slice(0,++c);
-if(c===current.length){del=true;setTimeout(animatePlaceholder,1000);return;}
+if(c===current.length){del=true;setTimeout(animatePlaceholder,1200);return;}
 }else{
 input.placeholder=current.slice(0,--c);
 if(c===0){del=false;p=(p+1)%phrases.length;}
