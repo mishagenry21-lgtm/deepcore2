@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DeepCore v5.1</title>
+<title>DeepCore v6</title>
 
 <style>
 :root{
@@ -19,60 +19,10 @@ background:var(--bg);
 color:var(--text);
 height:100vh;
 display:flex;
-overflow:hidden;
-}
-
-/* Overlay */
-.overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.35);
-opacity:0;
-visibility:hidden;
-transition:.3s;
-z-index:9;
-}
-.overlay.active{
-opacity:1;
-visibility:visible;
-}
-
-/* Sidebar */
-.sidebar{
-position:fixed;
-top:0;
-left:0;
-width:260px;
-height:100%;
-background:#f2f2f2;
-transform:translateX(-100%);
-transition:transform .3s ease;
-z-index:10;
-padding:15px;
-display:flex;
 flex-direction:column;
-gap:10px;
-overflow-y:auto;
-}
-.sidebar.active{
-transform:translateX(0);
-}
-.sidebar button{
-padding:8px;
-border-radius:8px;
-border:1px solid #ccc;
-background:white;
-cursor:pointer;
 }
 
-/* Main */
-.main{
-flex:1;
-display:flex;
-flex-direction:column;
-width:100%;
-}
-
+/* HEADER */
 header{
 display:flex;
 justify-content:space-between;
@@ -88,7 +38,7 @@ background:white;
 cursor:pointer;
 }
 
-/* Chat */
+/* CHAT */
 #chat{
 flex:1;
 overflow-y:auto;
@@ -108,6 +58,7 @@ margin-top:40px;
 max-width:75%;
 font-size:15px;
 white-space:pre-wrap;
+line-height:1.5;
 }
 
 .user{
@@ -121,11 +72,32 @@ border-radius:16px;
 align-self:flex-start;
 }
 
-/* Typing dots */
+/* ACTIONS */
+.actions{
+display:flex;
+gap:6px;
+margin-top:6px;
+}
+
+.actions span{
+width:28px;
+height:28px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+border:1px solid #000;
+background:#fff;
+cursor:pointer;
+font-size:13px;
+}
+
+/* TYPING DOTS */
 .typing{
 display:flex;
 gap:5px;
 }
+
 .dot{
 width:6px;
 height:6px;
@@ -133,19 +105,23 @@ border-radius:50%;
 background:#000;
 animation:bounce 1.4s infinite;
 }
+
 .dot:nth-child(2){animation-delay:.2s;}
 .dot:nth-child(3){animation-delay:.4s;}
+
 @keyframes bounce{
 0%,80%,100%{transform:translateY(0);}
 40%{transform:translateY(-6px);}
 }
 
-/* Footer */
+/* FOOTER */
 footer{
 display:flex;
 gap:6px;
 padding:10px;
+position:relative;
 }
+
 input{
 flex:1;
 padding:10px;
@@ -153,33 +129,45 @@ border-radius:12px;
 border:1px solid #ccc;
 outline:none;
 }
+
 #send{
 opacity:.5;
 transition:.3s;
 }
+
 #send.active{
 opacity:1;
+}
+
+/* PLUS MENU */
+.plusMenu{
+position:absolute;
+bottom:60px;
+left:10px;
+background:#fff;
+border-radius:12px;
+box-shadow:0 5px 20px rgba(0,0,0,.1);
+padding:10px;
+display:none;
+flex-direction:column;
+gap:6px;
+z-index:10;
+}
+
+.plusMenu button{
+border:none;
+background:none;
+padding:6px;
+text-align:left;
+cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<div class="overlay" id="overlay"></div>
-
-<div class="sidebar" id="sidebar">
-<button onclick="newChat()">➕ Новый чат</button>
-<div id="chatList"></div>
-<button onclick="fake()">Изображения</button>
-<button onclick="fake()">Приложения</button>
-<button onclick="fake()">Новый проект</button>
-</div>
-
-<div class="main">
 <header>
-<button class="icon" id="menuBtn">☰</button>
 <div>DeepCore</div>
-<button class="icon">🌓</button>
 </header>
 
 <div id="chat">
@@ -190,69 +178,48 @@ opacity:1;
 </div>
 
 <footer>
+<button class="icon" onclick="togglePlus()">＋</button>
+
+<div class="plusMenu" id="plusMenu">
+<button onclick="fake()">📷 Фотографии</button>
+<button onclick="fake()">📸 Камера</button>
+<button onclick="fake()">📁 Файлы</button>
+<button onclick="fake()">🎨 Создать изображение</button>
+<button onclick="fake()">🧠 Думаю</button>
+<button onclick="fake()">🔬 Глубокое исследование</button>
+<button onclick="fake()">🛍 Поиск покупок</button>
+<button onclick="fake()">🌐 Поиск в сети</button>
+<button onclick="fake()">📚 Учеба и обучение</button>
+<button onclick="fake()">❓ Викторины</button>
+<button onclick="fake()">🧩 Исследовать приложения</button>
+</div>
+
 <input id="input" placeholder="Спросить DeepCore">
 <button id="send">➤</button>
 </footer>
-</div>
 
 <script>
 const input=document.getElementById("input");
 const send=document.getElementById("send");
 const chat=document.getElementById("chat");
-const sidebar=document.getElementById("sidebar");
-const overlay=document.getElementById("overlay");
-const chatList=document.getElementById("chatList");
-const menuBtn=document.getElementById("menuBtn");
 
-let chats=JSON.parse(localStorage.getItem("deepcore_v51"))||[];
-let currentChat=[];
-
-/* Sidebar control */
-menuBtn.onclick=()=>{
-sidebar.classList.toggle("active");
-overlay.classList.toggle("active");
-};
-overlay.onclick=()=>{
-sidebar.classList.remove("active");
-overlay.classList.remove("active");
-};
-
-/* Save chats */
-function save(){
-localStorage.setItem("deepcore_v51",JSON.stringify(chats));
-renderChats();
-}
-function renderChats(){
-chatList.innerHTML="";
-chats.forEach((c,i)=>{
-let btn=document.createElement("button");
-btn.textContent=c[0]?.text?.slice(0,20)||"Чат";
-btn.onclick=()=>loadChat(i);
-chatList.appendChild(btn);
+input.addEventListener("input",()=>{
+send.classList.toggle("active",input.value.trim());
 });
-}
-function newChat(){
-if(currentChat.length){
-chats.push(currentChat);
-save();
-}
-currentChat=[];
-chat.innerHTML="";
-sidebar.classList.remove("active");
-overlay.classList.remove("active");
-}
-function loadChat(i){
-chat.innerHTML="";
-currentChat=chats[i];
-currentChat.forEach(m=>{
-if(m.role==="user") addUser(m.text);
-else addBotInstant(m.text);
-});
-sidebar.classList.remove("active");
-overlay.classList.remove("active");
-}
 
-/* Messages */
+send.onclick=()=>{
+if(!input.value.trim())return;
+addUser(input.value);
+let text=input.value;
+input.value="";
+showTyping();
+setTimeout(()=>{
+removeTyping();
+let response=generate(text.toLowerCase());
+typeMessage(response);
+},3000);
+};
+
 function addUser(text){
 const msg=document.createElement("div");
 msg.className="msg user";
@@ -261,87 +228,61 @@ chat.appendChild(msg);
 chat.scrollTop=chat.scrollHeight;
 }
 
-function addBot(text){
+function typeMessage(text){
 const msg=document.createElement("div");
 msg.className="msg bot";
 chat.appendChild(msg);
-typeWriter(msg,text,20);
-}
 
-function addBotInstant(text){
-const msg=document.createElement("div");
-msg.className="msg bot";
-msg.textContent=text;
-chat.appendChild(msg);
-}
-
-function typeWriter(element,text,speed){
 let i=0;
 function typing(){
 if(i<text.length){
-element.textContent+=text.charAt(i);
+msg.textContent+=text.charAt(i);
 i++;
 chat.scrollTop=chat.scrollHeight;
-setTimeout(typing,speed);
+setTimeout(typing,15);
+}else{
+addActions(msg);
 }
 }
 typing();
 }
 
-/* Typing dots */
+function addActions(msg){
+const act=document.createElement("div");
+act.className="actions";
+act.innerHTML="<span>📋</span><span>👍</span><span>👎</span><span>⋯</span>";
+msg.appendChild(act);
+}
+
 function showTyping(){
 const t=document.createElement("div");
 t.className="typing";
 t.id="typing";
 t.innerHTML="<div class='dot'></div><div class='dot'></div><div class='dot'></div>";
 chat.appendChild(t);
-chat.scrollTop=chat.scrollHeight;
 }
+
 function removeTyping(){
 document.getElementById("typing")?.remove();
 }
 
-/* Input */
-input.addEventListener("input",()=>{
-send.classList.toggle("active",input.value.trim());
-});
-send.onclick=()=>{
-if(!input.value.trim())return;
-let text=input.value;
-addUser(text);
-currentChat.push({role:"user",text});
-input.value="";
-showTyping();
-setTimeout(()=>{
-removeTyping();
-let r=generate(text.toLowerCase());
-addBot(r);
-currentChat.push({role:"bot",text:r});
-},2000);
-};
+function togglePlus(){
+const menu=document.getElementById("plusMenu");
+menu.style.display=menu.style.display==="flex"?"none":"flex";
+}
 
-/* Smart brain */
+function fake(){
+alert("У DeepCore пока нет такой функции 😅");
+}
 
-const hello=[
-"Кого я вижу!",
-"Ну наконец-то! А то я уже заскучал.",
-"Йо!",
-"Мир твоему дому!",
-"Приветствую!"
-];
+/* ===== МОЗГ ===== */
 
-const how=[
-"Лучше всех, а жаловаться грех!",
-"Как в автобусе — трясет, но едем.",
-"Да бывает по-всякому, но держусь.",
-"В полном порядке 😎"
-];
-
-const fallback=[
+const unclear=[
 "Давай-ка поподробнее, а то я не уловил суть.",
 "Можно чуть понятнее?",
-"Интересная мысль… разверни её.",
-"Я чувствую, тут есть глубина 😈"
+"Ты сейчас издал звук, который мой словарь не понял 😅",
+"Переспроси, пожалуйста.",
+"Чувствую, мысль интересная, но я её не поймал."
 ];
 
 function random(arr){
@@ -350,21 +291,54 @@ return arr[Math.floor(Math.random()*arr.length)];
 
 function generate(t){
 
-if(t.includes("привет")) return random(hello);
-if(t.includes("как дела")) return random(how);
+if(t==="/help"){
+return `Я DeepCore 😎
+Мои функции:
+/help
+/Big response
+• Калькулятор
+• Текст наоборот
+• Переводчик (демо)
+
+Я развиваюсь 😈`;
+}
+
+if(t==="/big response"){
+return `Квантовый компьютер — это вычислительная система нового поколения.
+
+В отличие от обычных компьютеров,
+которые используют биты (0 или 1),
+
+квантовый компьютер использует кубиты.
+
+Кубиты могут находиться сразу в нескольких состояниях
+благодаря явлению суперпозиции.
+
+Также существует запутанность —
+когда кубиты связаны между собой,
+даже если находятся далеко друг от друга.
+
+Это позволяет выполнять
+огромное количество вычислений одновременно.
+
+Такие компьютеры особенно полезны
+для сложных задач оптимизации,
+
+моделирования молекул,
+криптографии,
+
+и научных исследований.
+
+Однако технология всё ещё развивается,
+и массовое применение только впереди.`;
+}
 
 if(/^[0-9+\-*/(). ]+$/.test(t)){
-try{return "Ответ: "+eval(t);}catch{return "Ошибка вычисления";}
+try{return eval(t);}catch{return "Ошибка вычисления";}
 }
 
-if(t.includes("?")){
-return "Хм 🤔 Интересный вопрос. Пока скажу так: всё возможно, если копнуть глубже.";
+return random(unclear);
 }
-
-return random(fallback);
-}
-
-renderChats();
 </script>
 
 </body>
