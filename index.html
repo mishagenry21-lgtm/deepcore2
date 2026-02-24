@@ -3,484 +3,363 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DeepCore 4.1 v6</title>
+<title>DeepCore 4.1</title>
 
 <style>
-:root{
-  --bg:#ffffff;
-  --text:#000000;
-  --user:#e5e5e5;
-  --accent:#000;
-}
-
 body{
-  margin:0;
-  font-family:system-ui;
-  background:var(--bg);
-  color:var(--text);
-  display:flex;
-  flex-direction:column;
-  height:100vh;
-  transition:.3s;
+margin:0;
+font-family:Arial, sans-serif;
+display:flex;
+flex-direction:column;
+height:100vh;
+transition:0.3s;
 }
 
-.white{ --bg:#ffffff; --text:#000; --user:#e5e5e5; }
-.black{ --bg:#000000; --text:#ffffff; --user:#1e1e1e; }
-.blue{ --bg:#0f172a; --text:#ffffff; --user:#1e293b; }
+/* ===== ТЕМЫ ===== */
+
+body.white{background:#ffffff;color:#000;}
+body.black{background:#000000;color:#fff;}
+body.blue{background:#0f172a;color:#fff;}
 
 header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px 16px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px;
+font-size:18px;
+font-weight:bold;
 }
 
-.menu{
-  cursor:pointer;
-  font-size:22px;
+#menuBtn{cursor:pointer;}
+
+#menu{
+position:absolute;
+right:15px;
+top:60px;
+background:#222;
+padding:15px;
+border-radius:10px;
+display:none;
+flex-direction:column;
+gap:10px;
+z-index:10;
 }
 
-.dropdown{
-  position:absolute;
-  top:50px;
-  right:16px;
-  background:#222;
-  color:#fff;
-  padding:10px;
-  border-radius:10px;
-  display:none;
-  flex-direction:column;
-  gap:6px;
-  z-index:50;
+#menu button{
+background:none;
+border:none;
+color:white;
+cursor:pointer;
+text-align:left;
 }
 
-.dropdown button{
-  background:none;
-  border:none;
-  color:white;
-  cursor:pointer;
-  text-align:left;
-}
+/* ===== ЧАТ ===== */
 
 #chat{
-  flex:1;
-  overflow-y:auto;
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
+flex:1;
+padding:20px;
+overflow-y:auto;
+white-space:pre-wrap;
 }
 
-.msg{
-  max-width:80%;
-  white-space:pre-wrap;
-  word-break:break-word;
+.message{
+margin-bottom:15px;
+animation:fadeIn 0.5s ease;
 }
 
-.msg.user{
-  align-self:flex-end;
-  background:var(--user);
-  padding:10px 14px;
-  border-radius:14px;
+.me{
+font-weight:bold;
 }
 
-.msg.bot{
-  align-self:flex-start;
+@keyframes fadeIn{
+from{opacity:0;}
+to{opacity:1;}
 }
 
-/* === АНИМАЦИЯ БУКВ ИЗ ТЕМНОТЫ === */
+/* ===== ПОЛЕ ВВОДА ===== */
 
-.char{
-  display:inline-block;
-  opacity:0;
-  filter:brightness(0);
-  transition:opacity .15s linear, filter .3s linear;
+#inputArea{
+display:flex;
+padding:10px;
+gap:10px;
 }
 
-.char.visible{
-  opacity:1;
-  filter:brightness(1);
+#plus{
+font-size:20px;
+cursor:pointer;
 }
 
-/* === THINKING DOTS === */
-
-.typing{
-  display:flex;
-  gap:6px;
+#input{
+flex:1;
+padding:10px;
+border-radius:10px;
+border:none;
+outline:none;
 }
 
-.dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:var(--text);
-  animation:bounce 1.4s infinite;
+#send{
+padding:10px 15px;
+cursor:pointer;
+border:none;
+border-radius:10px;
 }
 
-.dot:nth-child(2){ animation-delay:.2s }
-.dot:nth-child(3){ animation-delay:.4s }
+/* ===== ПРЫГАЮЩИЕ ТОЧКИ ===== */
+
+.dots span{
+animation:bounce 1s infinite;
+display:inline-block;
+}
+
+.dots span:nth-child(2){animation-delay:0.2s;}
+.dots span:nth-child(3){animation-delay:0.4s;}
 
 @keyframes bounce{
-  0%,80%,100%{ transform:translateY(0) }
-  40%{ transform:translateY(-8px) }
-}
-
-footer{
-  display:flex;
-  gap:8px;
-  padding:10px;
-}
-
-input{
-  flex:1;
-  padding:10px;
-  border-radius:12px;
-  border:1px solid #ccc;
-  outline:none;
-}
-
-button{
-  padding:10px 12px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-#send{ opacity:.6 }
-#send.active{ opacity:1 }
-
-.plusMenu{
-  position:absolute;
-  bottom:70px;
-  left:10px;
-  background:#222;
-  color:#fff;
-  padding:10px;
-  border-radius:10px;
-  display:none;
-  flex-direction:column;
-  gap:6px;
-}
-.plusMenu button{
-  background:none;
-  border:none;
-  color:white;
-  cursor:pointer;
-  text-align:left;
+0%,100%{transform:translateY(0);}
+50%{transform:translateY(-6px);}
 }
 </style>
 </head>
-<body class="white">
+
+<body class="black">
 
 <header>
-<div>DeepCore</div>
-<div class="menu" id="menu">⋮</div>
-<div class="dropdown" id="dropdown">
+DeepCore
+<div id="menuBtn">⋮</div>
+</header>
+
+<div id="menu">
 <button onclick="setTheme('white')">Белая</button>
 <button onclick="setTheme('blue')">Синяя</button>
 <button onclick="setTheme('black')">Чёрная</button>
-<hr>
-<button onclick="toggleThink()">Думать: <span id="thinkState">OFF</span></button>
+<button onclick="toggleThinking()">Думать: <span id="thinkState">OFF</span></button>
 </div>
-</header>
 
 <div id="chat"></div>
 
-<div class="plusMenu" id="plusMenu">
-<button onclick="fake()">Фотографии</button>
-<button onclick="fake()">Камера</button>
-<button onclick="fake()">Файлы</button>
-<button onclick="fake()">Изображения</button>
-<button onclick="fake()">Глубокое мышление</button>
-<button onclick="fake()">Покупки</button>
-<button onclick="fake()">Исследование приложений</button>
-<button onclick="fake()">Создать изображение</button>
-<button onclick="fake()">Глубокое исследование</button>
+<div id="inputArea">
+<div id="plus" onclick="plusMenu()">＋</div>
+<input id="input" placeholder="DeepCore не спит">
+<button id="send" onclick="send()">➤</button>
 </div>
 
-<footer>
-<button onclick="togglePlus()">＋</button>
-<input id="input">
-<button id="send">➤</button>
-</footer>
-
 <script>
-const chat=document.getElementById("chat");
-const input=document.getElementById("input");
-const send=document.getElementById("send");
-const dropdown=document.getElementById("dropdown");
-const thinkState=document.getElementById("thinkState");
 
-let thinking=false;
+/* ===== СЛОВАРНЫЙ ЗАПАС ===== */
 
-/* === THEMES === */
-function setTheme(t){
-document.body.className=t;
-}
-document.getElementById("menu").onclick=()=>{
-dropdown.style.display=dropdown.style.display==="flex"?"none":"flex";
-dropdown.style.display="flex";
+const greetings = [
+"Кого я вижу! 😎",
+"О, привет! А я как раз заказывал пиццу, тебе кусочек? 🍕",
+"Ну наконец-то! А то я уже заскучал.",
+"Привет! Как там жизнь молодая?",
+"Мир твоему дому!",
+"Доброго времени суток!",
+"Мое почтение.",
+"Приветствую!",
+"Здравствуй(те)!",
+"Салют!",
+"Здарова!",
+"Хай!",
+"О, какие люди!",
+"Йо!",
+"Привет-привет!"
+];
+
+const howAreYou = [
+"Лучше всех, а жаловаться грех!",
+"Нормально, как в автобусе — трясет, но едем.",
+"Дела — как сажа бела? Шучу, отлично! 😄",
+"Идут потихоньку, ладно хоть не ползком.",
+"Как в сказке: чем дальше, тем страшнее! 😅",
+"Жду зарплату/лето/понедельник (нужное подчеркнуть).",
+"Всё сложно... но интересно!",
+"Дела у прокурора, а у меня делишки. А у тебя?"
+];
+
+let thinking = false;
+
+/* ===== МЕНЮ ===== */
+
+document.getElementById("menuBtn").onclick = function(){
+const menu = document.getElementById("menu");
+menu.style.display = menu.style.display==="flex"?"none":"flex";
 };
-function toggleThink(){
-thinking=!thinking;
-thinkState.textContent=thinking?"ON":"OFF";
+
+function setTheme(t){
+document.body.className = t;
 }
 
-// ===== СЛОВАРЬ =====
-const vocab = {
-
-  hello: [
-    "Кого я вижу! 😎",
-    "О, привет! А я как раз заказывал пиццу, тебе кусочек? 🍕",
-    "Ну наконец-то! А то я уже заскучал.",
-    "Привет! Как там жизнь молодая?",
-    "Мир твоему дому!",
-    "Доброго времени суток!",
-    "Мое почтение.",
-    "Приветствую!",
-    "Здравствуй(те)!",
-    "Салют!",
-    "Здарова!",
-    "Хай!",
-    "О, какие люди!",
-    "Здорово, коль не шутишь.",
-    "Йо!",
-    "Привет-привет!"
-  ],
-
-  howareyou: [
-    "Лучше всех, а жаловаться грех!",
-    "Нормально, как в автобусе — трясет, но едем.",
-    "Дела — как сажа бела? Шучу, отлично! 😄",
-    "Идут потихоньку, ладно хоть не ползком.",
-    "Как в сказке: чем дальше, тем страшнее! 😅",
-    "Как у белого человека в пятницу вечером.",
-    "Жду зарплату/лето/понедельник (нужное подчеркнуть).",
-    "В полном порядке, даже не спрашивай!",
-    "Да бывает по-всякому, но держусь.",
-    "Могло быть лучше, но судя по всему — не сегодня.",
-    "Если честно — устал как собака.",
-    "Всё сложно... но интересно!",
-    "Дела у прокурора, а у меня делишки. А у тебя?",
-    "Есть две новости: хорошая и плохая. С какой начнем?",
-    "А что, уже спрашивают?",
-    "Жаловаться не буду, но похвастаться нечем. А у тебя как?"
-  ],
-
-  unknown: [
-    "Интересная мысль… но давай чуть понятнее 😅",
-    "Я пытаюсь уловить суть… переформулируй?",
-    "Мозг ИИ перегревается 🤯 Попробуй иначе.",
-    "Это звучит загадочно… Раскрой идею.",
-    "Хмм… я почти понял. Почти.",
-    "Сформулируй чуть точнее, и я разгонюсь 😎",
-    "Запрос получен… но расшифровка не удалась.",
-    "Это новый язык или тест для меня? 😅",
-    "Попробуй задать вопрос по-другому.",
-    "Я хочу ответить круто, но пока не понял вопрос."
-  ]
-
-};  
-
-/* === PLUS === */
-function togglePlus(){
-const m=document.getElementById("plusMenu");
-m.style.display=m.style.display==="flex"?"none":"flex";
+function toggleThinking(){
+thinking = !thinking;
+document.getElementById("thinkState").innerText = thinking?"ON":"OFF";
 }
-function fake(){
+
+/* ===== ОТПРАВКА ===== */
+
+function send(){
+let input = document.getElementById("input");
+let text = input.value.trim();
+if(!text) return;
+
+addMessage("Ты: "+text,"me");
+input.value="";
+
+if(thinking){
+thinkingAnimation(text);
+}else{
+dotsAnimation(text);
+}
+}
+
+/* ===== АНИМАЦИЯ ДУМАНИЯ ===== */
+
+function thinkingAnimation(text){
+let chat=document.getElementById("chat");
+
+let msg=document.createElement("div");
+msg.className="message";
+chat.appendChild(msg);
+
+let states=["Думаю","Продумываю ещё раз","Формулирую ответ"];
+let i=0;
+
+let interval=setInterval(()=>{
+msg.innerText=states[i];
+i++;
+if(i>=states.length){
+clearInterval(interval);
+setTimeout(()=>typeAnswer(text,msg),1000);
+}
+},1500);
+}
+
+function dotsAnimation(text){
+let chat=document.getElementById("chat");
+let msg=document.createElement("div");
+msg.className="message dots";
+msg.innerHTML="<span>.</span><span>.</span><span>.</span>";
+chat.appendChild(msg);
+
+setTimeout(()=>typeAnswer(text,msg),4500);
+}
+
+/* ===== ПЕЧАТЬ ТЕКСТА ===== */
+
+function typeAnswer(text,element){
+let answer = generateAnswer(text);
+element.innerText="";
+let i=0;
+
+let interval=setInterval(()=>{
+element.innerText+=answer[i];
+i++;
+if(i>=answer.length) clearInterval(interval);
+},15);
+}
+
+/* ===== ЛОГИКА ===== */
+
+function generateAnswer(text){
+
+if(text.toLowerCase()==="/help"){
+return `Я - DeepCore. Меня так зовут, ведь я ИИ 😎
+
+Мои функции:
+• Переводчик
+• Калькулятор
+• Текст наоборот
+• /Bigresponse
+
+Словарный запас: Большой`;
+}
+
+if(text.toLowerCase()==="/bigresponse"){
+return `Квантовый компьютер — это вычислительная система нового поколения.
+Он работает не с битами, а с кубитами.
+Кубит может быть 0 и 1 одновременно.
+Это называется суперпозиция.
+Также существует квантовая запутанность.
+Она связывает кубиты между собой.
+Благодаря этому вычисления идут параллельно.
+Это даёт огромный прирост скорости.
+Такие компьютеры могут моделировать молекулы.
+Оптимизировать сложные процессы.
+Разрабатывать новые лекарства.
+Работать с криптографией.
+Но технология ещё развивается.
+Кубиты нестабильны.
+Чувствительны к шуму.
+Требуют сверхнизких температур.
+Однако за ними будущее вычислений 🚀`;
+}
+
+if(text.toLowerCase().includes("привет")){
+return greetings[Math.floor(Math.random()*greetings.length)];
+}
+
+if(text.toLowerCase().includes("как дела")){
+return howAreYou[Math.floor(Math.random()*howAreYou.length)];
+}
+
+if(text.startsWith("переведи ")){
+return text.replace("переведи ","");
+}
+
+if(text.startsWith("наоборот ")){
+return text.replace("наоборот ","").split("").reverse().join("");
+}
+
+if(!isNaN(text)){
+return "Ответ калькулятора: "+eval(text);
+}
+
+return "Интересный вопрос 😎";
+}
+
+/* ===== ПЛЮС МЕНЮ ===== */
+
+function plusMenu(){
 alert("У DeepCore пока нет такой функции 😅");
 }
 
-/* === PLACEHOLDER ANIMATION === */
+/* ===== ФРАЗЫ В ПОЛЕ ВВОДА ===== */
 
-const phrases=[
+const placeholders=[
 "DeepCore не спит",
 "DeepCore крутой",
-"Кстати, DeepCore 4.1 v6",
+"Кстати, DeepCore 4.1 v7",
 "Спрашивай что угодно",
-"DeepCore лучший друг ChatGPT",
 "DeepCore шарит 😎",
-"DeepCore рил мощный ИИ, да да",
-"Спроси что-нибудь умное",
 "Попробуй /Bigresponse 🚀"
 ];
 
-let p=0,c=0,del=false;
+let phIndex=0;
+let charIndex=0;
+let deleting=false;
+let input=document.getElementById("input");
+
 function animatePlaceholder(){
-let text=phrases[p];
-if(!del){
-input.placeholder=text.slice(0,c++);
-if(c>text.length) setTimeout(()=>del=true,1000);
+let current=placeholders[phIndex];
+
+if(!deleting){
+input.placeholder=current.substring(0,charIndex++);
+if(charIndex>current.length){
+deleting=true;
+setTimeout(animatePlaceholder,1000);
+return;
+}
 }else{
-input.placeholder=text.slice(0,c--);
-if(c===0){ del=false;p=(p+1)%phrases.length; }
+input.placeholder=current.substring(0,charIndex--);
+if(charIndex===0){
+deleting=false;
+phIndex=(phIndex+1)%placeholders.length;
 }
-setTimeout(animatePlaceholder,del?40:70);
 }
+setTimeout(animatePlaceholder,80);
+}
+
 animatePlaceholder();
 
-/* === SEND === */
-
-input.addEventListener("input",()=>{
-send.classList.toggle("active",input.value.trim());
-});
-
-send.onclick=()=>process();
-input.addEventListener("keydown",e=>{
-if(e.key==="Enter"){ e.preventDefault(); process(); }
-});
-
-function process(){
-let text=input.value.trim();
-if(!text) return;
-addUser(text);
-input.value="";
-send.classList.remove("active");
-
-if(text.toLowerCase()==="/help"){
-bot(`Я - DeepCore. Меня так зовут, ведь я ИИ 😎
-
-Мои функции:
-• Переводчик 
-• Калькулятор 
-• Текст наоборот 
-• /Bigresponse (Большой ответ на вопрос для примера "Что такое квантовый компьютер?" для проверки скорости печатания текста и т.д)
-
-Словарный запас: Большой`);
-return;
-}
-
-if(text.toLowerCase().startsWith("/big")){
-bigResponse();
-return;
-}
-
-if(/^[0-9+\-*/().\s]+$/.test(text)){
-try{ bot("🧮 Результат: "+Function("return "+text)()); }
-catch{ bot("Ошибка вычисления"); }
-return;
-}
-
-if(text.toLowerCase().startsWith("переверни")){
-bot(text.replace(/переверни/i,"").split("").reverse().join(""));
-return;
-}
-
-if(text.toLowerCase().startsWith("переведи")){
-bot("Перевод: (демо режим)");
-return;
-}
-
-respond(text);
-}
-
-function addUser(t){
-let div=document.createElement("div");
-div.className="msg user";
-div.textContent=t;
-chat.appendChild(div);
-chat.scrollTop=chat.scrollHeight;
-}
-
-function bot(t){
-let div=document.createElement("div");
-div.className="msg bot";
-chat.appendChild(div);
-chat.scrollTop=chat.scrollHeight;
-
-let chars=[];
-for(let i=0;i<t.length;i++){
-let span=document.createElement("span");
-span.className="char";
-span.textContent=t[i];
-div.appendChild(span);
-chars.push(span);
-}
-
-let i=0;
-function reveal(){
-if(i>=chars.length) return;
-chars[i].classList.add("visible");
-i++;
-chat.scrollTop=chat.scrollHeight;
-setTimeout(reveal,12);
-}
-reveal();
-}
-
-function thinkingAnimation(callback){
-let box=document.createElement("div");
-box.className="typing";
-box.innerHTML="<div class='dot'></div><div class='dot'></div><div class='dot'></div>";
-chat.appendChild(box);
-chat.scrollTop=chat.scrollHeight;
-
-setTimeout(()=>{
-box.remove();
-callback();
-},4500);
-}
-
-function respond(t){
-if(thinking){
-bot("Думаю...");
-setTimeout(()=>bot("Продумываю ещё раз..."),1000);
-setTimeout(()=>bot("Формулирую ответ..."),2000);
-setTimeout(()=>{
-thinkingAnimation(()=>{
-finalAnswer(t);
-});
-},3000);
-}else{
-thinkingAnimation(()=>finalAnswer(t));
-}
-}
-
-function finalAnswer(t){
-if(t.toLowerCase().includes("привет")){
-bot("Кого я вижу! 😎");
-return;
-}
-if(t.toLowerCase().includes("как дела")){
-bot("Лучше всех, а жаловаться грех!");
-return;
-}
-bot("Интересный вопрос 😎");
-}
-
-function bigResponse(){
-bot(`Квантовый компьютер — это вычислительная система нового поколения.
-
-В отличие от классических компьютеров,
-которые используют биты (0 или 1),
-квантовый компьютер использует кубиты.
-
-Кубиты могут находиться в суперпозиции,
-то есть одновременно быть 0 и 1.
-
-Это позволяет выполнять вычисления
-параллельно на огромном количестве состояний.
-
-Ещё одно важное свойство —
-квантовая запутанность.
-
-Она позволяет кубитам быть связаными
-друг с другом особым образом.
-
-Благодаря этому квантовые компьютеры
-могут решать сложные задачи быстрее.
-
-Например:
-• моделирование молекул
-• оптимизация
-• криптография
-
-Однако технология всё ещё развивается,
-потому что кубиты нестабильны
-и чувствительны к шуму.
-
-Но за ними будущее вычислений 🚀`);
-}
 </script>
 </body>
   </html>
