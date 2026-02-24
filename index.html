@@ -1,532 +1,486 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>DeepCore v6 — Smart</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepCore 4.1 v6</title>
+
 <style>
 :root{
-  --bg:#e6e6e6;
-  --text:#000;
-  --user-bg:#dcdcdc;
-  --bubble-radius:16px;
-  --actions-bg:#fff;
-  --accent:#111;
+  --bg:#ffffff;
+  --text:#000000;
+  --user:#e5e5e5;
+  --accent:#000;
 }
-.dark{
-  --bg:#0f0f0f;
-  --text:#fff;
-  --user-bg:#2a2a2a;
-  --actions-bg:#111;
-}
-*{box-sizing:border-box}
+
 body{
   margin:0;
-  padding:0;
-  font-family:system-ui, Arial;
+  font-family:system-ui;
   background:var(--bg);
   color:var(--text);
-  height:100vh;
   display:flex;
   flex-direction:column;
+  height:100vh;
+  transition:.3s;
 }
+
+.white{ --bg:#ffffff; --text:#000; --user:#e5e5e5; }
+.black{ --bg:#000000; --text:#ffffff; --user:#1e1e1e; }
+.blue{ --bg:#0f172a; --text:#ffffff; --user:#1e293b; }
+
 header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:10px 14px;
-  border-bottom:1px solid rgba(0,0,0,0.06);
+  padding:12px 16px;
 }
-.brand{font-weight:700}
-.header-controls{display:flex;gap:8px;align-items:center}
-.btn-circle{
-  width:38px;height:38px;border-radius:50%;border:1px solid rgba(0,0,0,0.12);
-  background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;
+
+.menu{
+  cursor:pointer;
+  font-size:22px;
 }
+
+.dropdown{
+  position:absolute;
+  top:50px;
+  right:16px;
+  background:#222;
+  color:#fff;
+  padding:10px;
+  border-radius:10px;
+  display:none;
+  flex-direction:column;
+  gap:6px;
+  z-index:50;
+}
+
+.dropdown button{
+  background:none;
+  border:none;
+  color:white;
+  cursor:pointer;
+  text-align:left;
+}
+
 #chat{
-  flex:1; overflow-y:auto; padding:18px; display:flex; flex-direction:column; gap:14px;
+  flex:1;
+  overflow-y:auto;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
 }
 
-/* center logo */
-.logo{ text-align:center; opacity:.28; margin-top:28px; }
-
-/* messages */
-.msg{ max-width:78%; font-size:15px; line-height:1.5; white-space:pre-wrap; word-break:break-word; }
-.msg.bot{ align-self:flex-start; background:transparent; color:var(--text); padding:6px 0; }
-.msg.user{ align-self:flex-end; background:var(--user-bg); color:var(--text); padding:10px 14px; border-radius:var(--bubble-radius);}
-
-/* actions under bot message */
-.actions{ display:flex; gap:8px; margin-top:6px; }
-.action-icon{
-  width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  border:1px solid var(--actions-bg); background:var(--actions-bg); cursor:pointer; font-size:14px;
+.msg{
+  max-width:80%;
+  white-space:pre-wrap;
+  word-break:break-word;
 }
 
-/* typing dots */
-.typing{display:flex;gap:6px;align-items:flex-end;margin:6px 0}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:bounce 1.4s infinite}
-.dot:nth-child(2){animation-delay:.15s}
-.dot:nth-child(3){animation-delay:.3s}
-@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-8px)}}
-
-/* footer */
-.footer{display:flex;gap:8px;padding:10px;border-top:1px solid rgba(0,0,0,0.06);align-items:center}
-.input{
-  flex:1;padding:10px 12px;border-radius:12px;border:1px solid rgba(0,0,0,0.12);outline:none;background:#fff;color:var(--text)
+.msg.user{
+  align-self:flex-end;
+  background:var(--user);
+  padding:10px 14px;
+  border-radius:14px;
 }
-.btn-send{padding:10px 12px;border-radius:10px;border:none;background:#bbb;color:#000;cursor:pointer;opacity:.6}
-.btn-send.active{background:#fff;opacity:1}
 
-/* plus menu */
+.msg.bot{
+  align-self:flex-start;
+}
+
+/* === АНИМАЦИЯ БУКВ ИЗ ТЕМНОТЫ === */
+
+.char{
+  display:inline-block;
+  opacity:0;
+  filter:brightness(0);
+  transition:opacity .15s linear, filter .3s linear;
+}
+
+.char.visible{
+  opacity:1;
+  filter:brightness(1);
+}
+
+/* === THINKING DOTS === */
+
+.typing{
+  display:flex;
+  gap:6px;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--text);
+  animation:bounce 1.4s infinite;
+}
+
+.dot:nth-child(2){ animation-delay:.2s }
+.dot:nth-child(3){ animation-delay:.4s }
+
+@keyframes bounce{
+  0%,80%,100%{ transform:translateY(0) }
+  40%{ transform:translateY(-8px) }
+}
+
+footer{
+  display:flex;
+  gap:8px;
+  padding:10px;
+}
+
+input{
+  flex:1;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  outline:none;
+}
+
+button{
+  padding:10px 12px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+#send{ opacity:.6 }
+#send.active{ opacity:1 }
+
 .plusMenu{
-  position:fixed;bottom:72px;left:12px;background:var(--actions-bg);border-radius:12px;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);
-  display:none;flex-direction:column;gap:6px;z-index:40;
+  position:absolute;
+  bottom:70px;
+  left:10px;
+  background:#222;
+  color:#fff;
+  padding:10px;
+  border-radius:10px;
+  display:none;
+  flex-direction:column;
+  gap:6px;
 }
-.plusMenu button{background:none;border:none;padding:8px;text-align:left;cursor:pointer;font-size:15px;border-radius:8px}
-
-/* per-char animation */
-.char{display:inline-block;opacity:0;filter:brightness(0);transform:translateY(0);transition:opacity .12s linear, filter .28s linear;}
-.char.visible{opacity:1;filter:brightness(1);}
-
-/* responsive */
-@media(max-width:520px){
-  .msg{max-width:88%}
-  .plusMenu{left:8px}
+.plusMenu button{
+  background:none;
+  border:none;
+  color:white;
+  cursor:pointer;
+  text-align:left;
 }
 </style>
 </head>
-<body>
+<body class="white">
 
 <header>
-  <div class="brand">DeepCore</div>
-  <div class="header-controls">
-    <div class="btn-circle" id="themeBtn" title="Toggle theme">🌓</div>
-    <div class="btn-circle" id="openChatsBtn" title="Чаты">☰</div>
-  </div>
+<div>DeepCore</div>
+<div class="menu" id="menu">⋮</div>
+<div class="dropdown" id="dropdown">
+<button onclick="setTheme('white')">Белая</button>
+<button onclick="setTheme('blue')">Синяя</button>
+<button onclick="setTheme('black')">Чёрная</button>
+<hr>
+<button onclick="toggleThink()">Думать: <span id="thinkState">OFF</span></button>
+</div>
 </header>
 
-<div id="chat">
-  <div class="logo">
-    <h2 style="margin:6px 0">Привет, я DeepCore</h2>
-    <div>Чем могу помочь вам сегодня?</div>
-  </div>
-</div>
+<div id="chat"></div>
 
-<!-- plus menu -->
 <div class="plusMenu" id="plusMenu">
-  <button onclick="fake('Фотографии')">📷 Фотографии</button>
-  <button onclick="fake('Камера')">📸 Камера</button>
-  <button onclick="fake('Файлы')">📁 Файлы</button>
-  <button onclick="fake('Создать изображение')">🎨 Создать изображение</button>
-  <button onclick="fake('Думаю')">🧠 Думаю</button>
-  <button onclick="fake('Глубокое исследование')">🔬 Глубокое исследование</button>
-  <button onclick="fake('Поиск покупок')">🛍 Поиск покупок</button>
-  <button onclick="fake('Поиск в сети')">🌐 Поиск в сети</button>
-  <button onclick="fake('Учеба и обучение')">📚 Учеба и обучение</button>
-  <button onclick="fake('Викторины')">❓ Викторины</button>
-  <button onclick="fake('Исследовать приложения')">🧩 Исследовать приложения</button>
-  <hr style="border:none;border-top:1px solid rgba(0,0,0,.06);margin:6px 0">
-  <button onclick="openChats()">📂 Все чаты</button>
-  <button onclick="newChat()">➕ Новый чат</button>
+<button onclick="fake()">Фотографии</button>
+<button onclick="fake()">Камера</button>
+<button onclick="fake()">Файлы</button>
+<button onclick="fake()">Изображения</button>
+<button onclick="fake()">Глубокое мышление</button>
+<button onclick="fake()">Покупки</button>
+<button onclick="fake()">Исследование приложений</button>
+<button onclick="fake()">Создать изображение</button>
+<button onclick="fake()">Глубокое исследование</button>
 </div>
 
-<footer class="footer">
-  <button class="btn-circle" id="plusBtn">＋</button>
-  <input id="input" class="input" placeholder="Спросить DeepCore" />
-  <button id="thinkBtn" class="btn-send" title="Думать">Думать</button>
-  <button id="sendBtn" class="btn-send" title="Отправить">➤</button>
+<footer>
+<button onclick="togglePlus()">＋</button>
+<input id="input">
+<button id="send">➤</button>
 </footer>
 
 <script>
-/* --------------------------
-  State & storage
----------------------------*/
-const chatEl = document.getElementById('chat');
-const inputEl = document.getElementById('input');
-const sendBtn = document.getElementById('sendBtn');
-const thinkBtn = document.getElementById('thinkBtn');
-const plusBtn = document.getElementById('plusBtn');
-const plusMenu = document.getElementById('plusMenu');
-const themeBtn = document.getElementById('themeBtn');
-const openChatsBtn = document.getElementById('openChatsBtn');
+const chat=document.getElementById("chat");
+const input=document.getElementById("input");
+const send=document.getElementById("send");
+const dropdown=document.getElementById("dropdown");
+const thinkState=document.getElementById("thinkState");
 
-let chats = JSON.parse(localStorage.getItem('deepcore_chats_v6')||'[]'); // array of arrays [{role,text},...]
-let currentChatIndex = null; // null means new session (unsaved)
-let currentSession = []; // messages of current session
+let thinking=false;
 
-function saveAll(){
-  // if there is a current session and it's not saved, push it
-  if(currentSession.length>0 && currentChatIndex===null){
-    // don't auto-save new empty sessions; leave until user presses New Chat or open chats
-  }
-  localStorage.setItem('deepcore_chats_v6', JSON.stringify(chats));
+/* === THEMES === */
+function setTheme(t){
+document.body.className=t;
+}
+document.getElementById("menu").onclick=()=>{
+dropdown.style.display=dropdown.style.display==="flex"?"none":"flex";
+dropdown.style.display="flex";
+};
+function toggleThink(){
+thinking=!thinking;
+thinkState.textContent=thinking?"ON":"OFF";
 }
 
-/* --------------------------
-  UI helpers
----------------------------*/
-function scrollToBottom(){ chatEl.scrollTop = chatEl.scrollHeight; }
+// ===== СЛОВАРЬ =====
+const vocab = {
 
-function createMsgElement(role, text, withActions=false){
-  const el = document.createElement('div');
-  el.className = 'msg ' + (role==='user' ? 'user' : 'bot');
-  // for bot: we will render per-char spans; for user: plain text
-  if(role==='user'){
-    el.textContent = text;
-  } else {
-    // create per-char spans for "letter from dark" animation
-    el.innerHTML = ''; 
-    for(let i=0;i<text.length;i++){
-      const ch = document.createElement('span');
-      ch.className = 'char';
-      ch.textContent = text[i];
-      el.appendChild(ch);
-    }
-  }
-  if(withActions && role==='bot'){
-    const acts = document.createElement('div');
-    acts.className='actions';
-    // create action icons as buttons to avoid HTML injection
-    const copyBtn = document.createElement('div'); copyBtn.className='action-icon'; copyBtn.title='Копировать'; copyBtn.textContent='📋';
-    copyBtn.onclick = ()=>{ navigator.clipboard.writeText(text).then(()=>copyBtn.textContent='✔'); setTimeout(()=>copyBtn.textContent='📋',1000); };
-    const likeBtn = document.createElement('div'); likeBtn.className='action-icon'; likeBtn.textContent='👍';
-    const dislikeBtn = document.createElement('div'); dislikeBtn.className='action-icon'; dislikeBtn.textContent='👎';
-    const moreBtn = document.createElement('div'); moreBtn.className='action-icon'; moreBtn.textContent='⋯';
-    acts.appendChild(copyBtn); acts.appendChild(likeBtn); acts.appendChild(dislikeBtn); acts.appendChild(moreBtn);
-    el.appendChild(acts);
-  }
-  return el;
+  hello: [
+    "Кого я вижу! 😎",
+    "О, привет! А я как раз заказывал пиццу, тебе кусочек? 🍕",
+    "Ну наконец-то! А то я уже заскучал.",
+    "Привет! Как там жизнь молодая?",
+    "Мир твоему дому!",
+    "Доброго времени суток!",
+    "Мое почтение.",
+    "Приветствую!",
+    "Здравствуй(те)!",
+    "Салют!",
+    "Здарова!",
+    "Хай!",
+    "О, какие люди!",
+    "Здорово, коль не шутишь.",
+    "Йо!",
+    "Привет-привет!"
+  ],
+
+  howareyou: [
+    "Лучше всех, а жаловаться грех!",
+    "Нормально, как в автобусе — трясет, но едем.",
+    "Дела — как сажа бела? Шучу, отлично! 😄",
+    "Идут потихоньку, ладно хоть не ползком.",
+    "Как в сказке: чем дальше, тем страшнее! 😅",
+    "Как у белого человека в пятницу вечером.",
+    "Жду зарплату/лето/понедельник (нужное подчеркнуть).",
+    "В полном порядке, даже не спрашивай!",
+    "Да бывает по-всякому, но держусь.",
+    "Могло быть лучше, но судя по всему — не сегодня.",
+    "Если честно — устал как собака.",
+    "Всё сложно... но интересно!",
+    "Дела у прокурора, а у меня делишки. А у тебя?",
+    "Есть две новости: хорошая и плохая. С какой начнем?",
+    "А что, уже спрашивают?",
+    "Жаловаться не буду, но похвастаться нечем. А у тебя как?"
+  ],
+
+  unknown: [
+    "Интересная мысль… но давай чуть понятнее 😅",
+    "Я пытаюсь уловить суть… переформулируй?",
+    "Мозг ИИ перегревается 🤯 Попробуй иначе.",
+    "Это звучит загадочно… Раскрой идею.",
+    "Хмм… я почти понял. Почти.",
+    "Сформулируй чуть точнее, и я разгонюсь 😎",
+    "Запрос получен… но расшифровка не удалась.",
+    "Это новый язык или тест для меня? 😅",
+    "Попробуй задать вопрос по-другому.",
+    "Я хочу ответить круто, но пока не понял вопрос."
+  ]
+
+};  
+
+/* === PLUS === */
+function togglePlus(){
+const m=document.getElementById("plusMenu");
+m.style.display=m.style.display==="flex"?"none":"flex";
+}
+function fake(){
+alert("У DeepCore пока нет такой функции 😅");
 }
 
-/* reveal per-char animation: show chars sequentially */
-function revealChars(el, speed=18){
-  const spans = Array.from(el.querySelectorAll('.char'));
-  let i=0;
-  function step(){
-    if(i>=spans.length) return;
-    spans[i].classList.add('visible');
-    i++;
-    chatEl.scrollTop = chatEl.scrollHeight;
-    setTimeout(step, speed);
-  }
-  step();
+/* === PLACEHOLDER ANIMATION === */
+
+const phrases=[
+"DeepCore не спит",
+"DeepCore крутой",
+"Кстати, DeepCore 4.1 v6",
+"Спрашивай что угодно",
+"DeepCore лучший друг ChatGPT",
+"DeepCore шарит 😎",
+"DeepCore рил мощный ИИ, да да",
+"Спроси что-нибудь умное",
+"Попробуй /Bigresponse 🚀"
+];
+
+let p=0,c=0,del=false;
+function animatePlaceholder(){
+let text=phrases[p];
+if(!del){
+input.placeholder=text.slice(0,c++);
+if(c>text.length) setTimeout(()=>del=true,1000);
+}else{
+input.placeholder=text.slice(0,c--);
+if(c===0){ del=false;p=(p+1)%phrases.length; }
 }
-
-/* add message to chat (and to currentSession) */
-function pushMessage(role, text, withActions=false, revealSpeed=18){
-  const el = createMsgElement(role, text, withActions);
-  chatEl.appendChild(el);
-  scrollToBottom();
-  if(role==='bot'){
-    // small delay before starting reveal for natural effect
-    setTimeout(()=>revealChars(el, revealSpeed), 200);
-  }
-  // store
-  currentSession.push({role, text});
-  saveAll();
+setTimeout(animatePlaceholder,del?40:70);
 }
+animatePlaceholder();
 
-/* typing dots show/hide */
-function showTypingDots(){
-  const t = document.createElement('div'); t.className='typing'; t.id='typing';
-  t.innerHTML = "<div class='dot'></div><div class='dot'></div><div class='dot'></div>";
-  chatEl.appendChild(t);
-  scrollToBottom();
-}
-function removeTypingDots(){ document.getElementById('typing')?.remove(); }
+/* === SEND === */
 
-/* plus menu toggle */
-plusBtn.addEventListener('click', ()=>{ plusMenu.style.display = plusMenu.style.display==='flex' ? 'none':'flex'; });
-
-/* theme toggle */
-themeBtn.addEventListener('click', ()=>{ document.body.classList.toggle('dark'); });
-
-/* open chats (simple modal prompt list) */
-openChatsBtn.addEventListener('click', openChats);
-function openChats(){
-  // simple UI: show a prompt listing chats — mobile friendly
-  if(chats.length===0){ alert('Чатов пока нет.'); return; }
-  let list = 'Выбери чат (введи номер):\n';
-  chats.forEach((c,i)=>{ list += `${i+1}. ${c[0]?.text?.slice(0,30)||'Чат'}\n`; });
-  const idx = prompt(list);
-  const n = parseInt(idx);
-  if(!n || n<1 || n>chats.length) return;
-  // load chosen
-  currentChatIndex = n-1;
-  currentSession = JSON.parse(JSON.stringify(chats[currentChatIndex])); // deep copy
-  renderCurrentChat();
-}
-
-/* render current session into UI */
-function renderCurrentChat(){
-  chatEl.innerHTML='';
-  if(currentSession.length===0){
-    document.querySelector('.logo').style.display='block';
-  } else {
-    document.querySelector('.logo').style.display='none';
-  }
-  currentSession.forEach(m=> {
-    const el = createMsgElement(m.role, m.text, m.role==='bot');
-    chatEl.appendChild(el);
-    if(m.role==='bot'){
-      revealChars(el, 6); // reveal fast to rebuild view
-    }
-  });
-  scrollToBottom();
-}
-
-/* New chat */
-function newChat(){
-  // save current if wanted
-  if(currentSession.length>0){
-    chats.push(currentSession.slice());
-    localStorage.setItem('deepcore_chats_v6', JSON.stringify(chats));
-  }
-  currentSession = [];
-  currentChatIndex = null;
-  chatEl.innerHTML = `<div class="logo"><h2 style="margin:6px 0">Привет, я DeepCore</h2><div>Чем могу помочь вам сегодня?</div></div>`;
-  scrollToBottom();
-}
-
-/* fake plus menu actions */
-function fake(name){
-  alert('У DeepCore пока нет такой функции 😅');
-}
-
-/* send/think handlers */
-inputEl.addEventListener('input', ()=>{ sendBtn.classList.toggle('active', inputEl.value.trim().length>0); });
-
-sendBtn.addEventListener('click', ()=>{
-  if(!inputEl.value.trim()) return;
-  const text = inputEl.value.trim();
-  addUserAndRespond(text, false);
+input.addEventListener("input",()=>{
+send.classList.toggle("active",input.value.trim());
 });
 
-thinkBtn.addEventListener('click', ()=>{
-  if(!inputEl.value.trim()) return;
-  const text = inputEl.value.trim();
-  addUserAndRespond(text, true);
+send.onclick=()=>process();
+input.addEventListener("keydown",e=>{
+if(e.key==="Enter"){ e.preventDefault(); process(); }
 });
 
-function addUserAndRespond(text, withThinking){
-  // add user
-  const userEl = createMsgElement('user', text);
-  chatEl.appendChild(userEl);
-  currentSession.push({role:'user', text});
-  inputEl.value=''; sendBtn.classList.remove('active');
-  scrollToBottom();
+function process(){
+let text=input.value.trim();
+if(!text) return;
+addUser(text);
+input.value="";
+send.classList.remove("active");
 
-  // optionally show thinking stage then final
-  if(withThinking){
-    // show small bot 'thinking' message (dots only) for ~2.5s, then final typing
-    showTypingDots();
-    setTimeout(()=>{ removeTypingDots(); // show short "Думаю..." message for visual
-      const thinkingMsg = createMsgElement('bot','Думаю...'); chatEl.appendChild(thinkingMsg); scrollToBottom();
-      // animate that 'thinking' text quickly (reveal)
-      revealChars(thinkingMsg, 40);
-      setTimeout(()=>{ thinkingMsg.remove();
-        // now final
-        showTypingDots();
-        setTimeout(()=>{ removeTypingDots(); const response = generateResponse(text.toLowerCase()); pushBot(response, true); }, 900);
-      }, 900);
-    }, 1800);
-  } else {
-    // normal: show dots then type
-    showTypingDots();
-    setTimeout(()=>{ removeTypingDots(); const response = generateResponse(text.toLowerCase()); pushBot(response, true); }, 900 + Math.random()*2000);
-  }
-}
+if(text.toLowerCase()==="/help"){
+bot(`Я - DeepCore. Меня так зовут, ведь я ИИ 😎
 
-/* push bot answer to UI with actions and per-char reveal */
-function pushBot(text, withActions){
-  const el = createMsgElement('bot', text, withActions);
-  chatEl.appendChild(el);
-  currentSession.push({role:'bot', text});
-  revealChars(el, 12); // speed of reveal: lower -> slower
-}
-
-/* --------------------------
-  Language brain (your big dictionary + logic)
----------------------------*/
-
-/* greetings — full list you provided plus extra */
-const greetings = [
-  "Кого я вижу!",
-  "О, привет! А я как раз заказывал пиццу, тебе кусочек?",
-  "Ну наконец-то! А то я уже заскучал.",
-  "Привет! Как там жизнь молодая?",
-  "Мир твоему дому!",
-  "Доброго времени суток!",
-  "Мое почтение.",
-  "Приветствую!",
-  "Здравствуй(те)!",
-  "Салют!",
-  "Здарова!",
-  "Хай!",
-  "О, какие люди!",
-  "Здорово, коль не шутишь.",
-  "Йо!",
-  "Привет-привет!",
-  "Легок на помине!"
-];
-
-/* how are you responses */
-const howAre = [
-  "Дела — как сажа бела? Шучу, отлично!",
-  "Лучше всех, а жаловаться грех!",
-  "Идут потихоньку, ладно хоть не ползком.",
-  "Как в сказке: чем дальше, тем страшнее! (смеясь).",
-  "Нормально, как в автобусе — трясет, но едем.",
-  "Жду зарплату/лето/понедельник (нужное подчеркнуть).",
-  "В полном порядке, даже не спрашивай!",
-  "Да бывает по-всякому, но держусь.",
-  "Могло быть лучше, но судя по всему — не сегодня.",
-  "Если честно — устал как собака.",
-  "Всё сложно... но интересно!"
-];
-
-/* unclear / fallback */
-const unclear = [
-  "Что именно тебе интересно? Могу развернуть мысль.",
-  "Ага, вот тут самый сок! Короче, дело было так...",
-  "В двух словах и не расскажешь, но если хочешь, могу загрузить подробностями.",
-  "Давай остановимся на этом поподробнее, потому что это важно.",
-  "Прости, ты сказал что-то важное? Я заслушался соловьями.",
-  "Переспроси, пожалуйста, а то я ушел в себя и скоро вернусь.",
-  "Вы меня смутили своей загадочностью. Можно чуть понятнее?",
-  "Давай-ка поподробнее, а то я не уловил суть.",
-  "Ты сейчас издал такой звук, что мой внутренний словарь дал сбой. Расшифруй.",
-  "Интересно, конечно, но не хочешь ли ты спросить меня о чём-то конкретном?"
-];
-
-/* helper */
-function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-/* core generate function */
-function generateResponse(input){
-  // trim & normalize
-  const t = input.trim();
-
-  // /help exact
-  if(t === '/help'){
-    return `Я DeepCore 😎
 Мои функции:
-/help
-/Big response
-• ✖️ Калькулятор
-• Текст наоборот
-• Переводчик (демо)
+• Переводчик 
+• Калькулятор 
+• Текст наоборот 
+• /Bigresponse (Большой ответ на вопрос для примера "Что такое квантовый компьютер?" для проверки скорости печатания текста и т.д)
 
-Я развиваюсь 😈`;
-  }
-
-  // /Big response (case-insensitive)
-  if(t.startsWith('/big')){
-    // long 12–18 line answer about quantum computer as example
-    return `Квантовый компьютер — это вычислительная система нового поколения.
-
-В отличие от классических компьютеров, которые оперируют битами (0 или 1),
-квантовый компьютер использует кубиты — единицы информации, которые могут находиться
-в суперпозиции состояний (одновременно 0 и 1). Это даёт эффект параллельных вычислений.
-
-Ещё одно важное явление — запутанность: кубиты оказываются коррелированы таким образом,
-что состояние одного мгновенно связано со вторым независимо от расстояния.
-
-Благодаря суперпозиции и запутанности квантовые компьютеры потенциально могут решить
-определённые задачи намного быстрее: оптимизация, моделирование молекул, факторизация
-чисел (что влияет на криптографию) и сложные симуляции.
-
-Технология пока развивается: ошибки, шум и масштабирование — главные препятствия.
-Тем не менее это захватывающая область, где ожидаются серьёзные прорывы.`;
-  }
-
-  // simple math detection (only digits and math symbols)
-  if(/^[0-9+\-*/().\s]+$/.test(t)){
-    try{
-      // safely evaluate simple expression
-      const res = Function(`"use strict"; return (${t})`)();
-      if(res===undefined) return "Ошибка вычисления";
-      return `🧮 Результат: ${res}`;
-    }catch(e){ return "Ошибка вычисления"; }
-  }
-
-  // reverse (переверни ... or reverse ...)
-  if(t.startsWith('переверни') || t.startsWith('/reverse') || t.startsWith('reverse ')){
-    const txt = t.replace(/^переверни\s*/,'').replace(/^\/reverse\s*/,'').replace(/^reverse\s*/,'').trim();
-    return txt.split('').reverse().join('');
-  }
-
-  // count command /count
-  if(t.startsWith('/count')){
-    const txt = t.replace('/count','').trim();
-    return `Количество символов: ${txt.length}`;
-  }
-
-  // translate demo
-  if(t.startsWith('переведи') || t.startsWith('/translate') || t.startsWith('translate')){
-    return 'Перевод: (демо режим)';
-  }
-
-  // greetings detection (word list)
-  const greetWords = ['привет','здарова','хай','йо','салют','здравствуйте','прив'];
-  for(const gw of greetWords) if(t.includes(gw)) return rand(greetings);
-
-  // how are you detection
-  const howWords = ['как дела','как ты','как жизнь','чё как','как сам'];
-  for(const hw of howWords) if(t.includes(hw)) return rand(howAre);
-
-  // short inputs -> try to detect unclear intent
-  if(t.length < 3) return rand(unclear);
-
-  // question fallback
-  if(t.endsWith('?') || t.includes('что') || t.includes('как') || t.includes('почему')){
-    return "Интересный вопрос 🤔 Дай секунду подумать... Пока могу сказать: всё возможно.";
-  }
-
-  // default fallback more varied
-  return rand(unclear);
+Словарный запас: Большой`);
+return;
 }
 
-/* initialize (load previous chat if any) */
-(function init(){
-  if(chats.length>0){
-    // load last chat
-    currentChatIndex = chats.length -1;
-    currentSession = chats[currentChatIndex].slice();
-    renderCurrentChat();
-  } else {
-    // nothing
-    // keep the centered logo visible
-  }
-})();
-
-/* helper to render current session */
-function renderCurrentChat(){
-  chatEl.innerHTML = '';
-  if(currentSession.length===0){
-    chatEl.innerHTML = `<div class="logo"><h2 style="margin:6px 0">Привет, я DeepCore</h2><div>Чем могу помочь вам сегодня?</div></div>`;
-    return;
-  }
-  currentSession.forEach(m=> {
-    const el = createMsgElement(m.role, m.text, m.role==='bot');
-    chatEl.appendChild(el);
-    if(m.role==='bot') revealChars(el, 6);
-  });
-  scrollToBottom();
+if(text.toLowerCase().startsWith("/big")){
+bigResponse();
+return;
 }
 
-/* small UI helpers already defined above may be referenced here; expose some */
-window.newChat = newChat;
-window.openChats = openChats;
-window.fake = fake;
+if(/^[0-9+\-*/().\s]+$/.test(text)){
+try{ bot("🧮 Результат: "+Function("return "+text)()); }
+catch{ bot("Ошибка вычисления"); }
+return;
+}
 
-/* quick initial bindings for keyboard enter */
-inputEl.addEventListener('keydown', (e)=>{
-  if(e.key==='Enter' && !e.shiftKey){
-    e.preventDefault();
-    sendBtn.click();
-  }
+if(text.toLowerCase().startsWith("переверни")){
+bot(text.replace(/переверни/i,"").split("").reverse().join(""));
+return;
+}
+
+if(text.toLowerCase().startsWith("переведи")){
+bot("Перевод: (демо режим)");
+return;
+}
+
+respond(text);
+}
+
+function addUser(t){
+let div=document.createElement("div");
+div.className="msg user";
+div.textContent=t;
+chat.appendChild(div);
+chat.scrollTop=chat.scrollHeight;
+}
+
+function bot(t){
+let div=document.createElement("div");
+div.className="msg bot";
+chat.appendChild(div);
+chat.scrollTop=chat.scrollHeight;
+
+let chars=[];
+for(let i=0;i<t.length;i++){
+let span=document.createElement("span");
+span.className="char";
+span.textContent=t[i];
+div.appendChild(span);
+chars.push(span);
+}
+
+let i=0;
+function reveal(){
+if(i>=chars.length) return;
+chars[i].classList.add("visible");
+i++;
+chat.scrollTop=chat.scrollHeight;
+setTimeout(reveal,12);
+}
+reveal();
+}
+
+function thinkingAnimation(callback){
+let box=document.createElement("div");
+box.className="typing";
+box.innerHTML="<div class='dot'></div><div class='dot'></div><div class='dot'></div>";
+chat.appendChild(box);
+chat.scrollTop=chat.scrollHeight;
+
+setTimeout(()=>{
+box.remove();
+callback();
+},4500);
+}
+
+function respond(t){
+if(thinking){
+bot("Думаю...");
+setTimeout(()=>bot("Продумываю ещё раз..."),1000);
+setTimeout(()=>bot("Формулирую ответ..."),2000);
+setTimeout(()=>{
+thinkingAnimation(()=>{
+finalAnswer(t);
 });
+},3000);
+}else{
+thinkingAnimation(()=>finalAnswer(t));
+}
+}
+
+function finalAnswer(t){
+if(t.toLowerCase().includes("привет")){
+bot("Кого я вижу! 😎");
+return;
+}
+if(t.toLowerCase().includes("как дела")){
+bot("Лучше всех, а жаловаться грех!");
+return;
+}
+bot("Интересный вопрос 😎");
+}
+
+function bigResponse(){
+bot(`Квантовый компьютер — это вычислительная система нового поколения.
+
+В отличие от классических компьютеров,
+которые используют биты (0 или 1),
+квантовый компьютер использует кубиты.
+
+Кубиты могут находиться в суперпозиции,
+то есть одновременно быть 0 и 1.
+
+Это позволяет выполнять вычисления
+параллельно на огромном количестве состояний.
+
+Ещё одно важное свойство —
+квантовая запутанность.
+
+Она позволяет кубитам быть связаными
+друг с другом особым образом.
+
+Благодаря этому квантовые компьютеры
+могут решать сложные задачи быстрее.
+
+Например:
+• моделирование молекул
+• оптимизация
+• криптография
+
+Однако технология всё ещё развивается,
+потому что кубиты нестабильны
+и чувствительны к шуму.
+
+Но за ними будущее вычислений 🚀`);
+}
 </script>
 </body>
   </html>
