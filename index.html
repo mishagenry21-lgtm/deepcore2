@@ -15,6 +15,8 @@ height:100vh;
 transition:0.3s;
 }
 
+/* ===== ТЕМЫ ===== */
+
 body.white{background:#ffffff;color:#000;}
 body.black{background:#000000;color:#fff;}
 body.blue{background:#0f172a;color:#fff;}
@@ -51,36 +53,62 @@ text-align:left;
 font-size:14px;
 }
 
+/* ===== ЧАТ ===== */
+
 #chat{
 flex:1;
 padding:20px;
 overflow-y:auto;
 white-space:pre-wrap;
+display:flex;
+flex-direction:column;
+gap:10px;
 }
 
 .message{
-margin-bottom:15px;
-animation:fadeIn 0.4s ease;
+max-width:75%;
+white-space:pre-wrap;
+word-wrap:break-word;
 }
 
 .me{
-font-weight:bold;
+align-self:flex-end;
+background:#3a3a3a;
+color:#fff;
+padding:10px 14px;
+border-radius:18px;
+}
+
+.bot{
+align-self:flex-start;
+}
+
+/* ===== АНИМАЦИИ ===== */
+
+.fadeLetter{
+opacity:0;
+animation:fadeIn 0.3s forwards;
 }
 
 @keyframes fadeIn{
-from{opacity:0;}
 to{opacity:1;}
 }
 
-.fadeText{
-opacity:0;
-animation:fadeLetters 0.4s forwards;
+.bigDots span{
+font-size:30px;
+display:inline-block;
+animation:bounce 1s infinite;
 }
 
-@keyframes fadeLetters{
-from{opacity:0;}
-to{opacity:1;}
+.bigDots span:nth-child(2){animation-delay:0.2s;}
+.bigDots span:nth-child(3){animation-delay:0.4s;}
+
+@keyframes bounce{
+0%,100%{transform:translateY(0);}
+50%{transform:translateY(-10px);}
 }
+
+/* ===== INPUT ===== */
 
 #inputArea{
 display:flex;
@@ -108,22 +136,9 @@ border-radius:12px;
 cursor:pointer;
 }
 
-.dots span{
-display:inline-block;
-animation:bounce 1s infinite;
-}
-
-.dots span:nth-child(2){animation-delay:0.2s;}
-.dots span:nth-child(3){animation-delay:0.4s;}
-
-@keyframes bounce{
-0%,100%{transform:translateY(0);}
-50%{transform:translateY(-6px);}
-}
 </style>
 </head>
-
-<body class="black">
+<body class="blue">
 
 <header>
 DeepCore
@@ -141,7 +156,7 @@ DeepCore
 
 <div id="inputArea">
 <div id="plus" onclick="plusMenu()">＋</div>
-<input id="input" placeholder="">
+<input id="input">
 <button id="send">➤</button>
 </div>
 
@@ -149,17 +164,17 @@ DeepCore
 
 /* ===== СЛОВАРНЫЙ ЗАПАС ===== */
 
-const greetings = [
+const greetings=[
 "Кого я вижу! 😎","О, привет! А я как раз заказывал пиццу, тебе кусочек? 🍕",
 "Ну наконец-то! А то я уже заскучал.","Привет! Как там жизнь молодая?",
 "Мир твоему дому!","Доброго времени суток!","Мое почтение.",
 "Приветствую!","Здравствуй(те)!","Салют!","Здарова!",
-"Хай!","О, какие люди!","Здорово, коль не шутишь.",
-"Йо!","Привет-привет!"
+"Хай!","О, какие люди!","Здорово, коль не шутишь.","Йо!","Привет-привет!"
 ];
 
-const howAreYou = [
-"Лучше всех, а жаловаться грех!","Нормально, как в автобусе — трясет, но едем.",
+const howAreYou=[
+"Лучше всех, а жаловаться грех!",
+"Нормально, как в автобусе — трясет, но едем.",
 "Дела — как сажа бела? Шучу, отлично! 😄",
 "Идут потихоньку, ладно хоть не ползком.",
 "Как в сказке: чем дальше, тем страшнее! 😅",
@@ -180,8 +195,11 @@ let thinking=false;
 /* ===== МЕНЮ ===== */
 
 menuBtn.onclick=()=>menu.style.display=menu.style.display==="flex"?"none":"flex";
+
 document.addEventListener("click",(e)=>{
-if(!menu.contains(e.target)&&e.target!==menuBtn){menu.style.display="none";}
+if(!menu.contains(e.target)&&e.target!==menuBtn){
+menu.style.display="none";
+}
 });
 
 function setTheme(t){document.body.className=t;}
@@ -199,18 +217,16 @@ function sendMessage(){
 let text=input.value.trim();
 if(!text)return;
 
-addMessage("Ты: "+text,"me");
+addMessage(text,"me");
 input.value="";
 
 if(thinking){thinkingFlow(text);}
 else{dotsFlow(text);}
 }
 
-/* ===== ДОБАВЛЕНИЕ СООБЩЕНИЯ ===== */
-
 function addMessage(text,type){
 let msg=document.createElement("div");
-msg.className="message "+type;
+msg.className="message "+(type==="me"?"me":"bot");
 msg.innerText=text;
 chat.appendChild(msg);
 chat.scrollTop=chat.scrollHeight;
@@ -220,7 +236,7 @@ chat.scrollTop=chat.scrollHeight;
 
 function thinkingFlow(text){
 let msg=document.createElement("div");
-msg.className="message";
+msg.className="message bot";
 chat.appendChild(msg);
 
 let states=["Думаю","Продумываю ещё раз","Формулирую ответ"];
@@ -238,14 +254,14 @@ setTimeout(()=>typeAnswer(text,msg),1000);
 
 function dotsFlow(text){
 let msg=document.createElement("div");
-msg.className="message dots";
-msg.innerHTML="<span>.</span><span>.</span><span>.</span>";
+msg.className="message bot bigDots";
+msg.innerHTML="<span>●</span><span>●</span><span>●</span>";
 chat.appendChild(msg);
 
 setTimeout(()=>typeAnswer(text,msg),4500);
 }
 
-/* ===== ПЕЧАТЬ С АНИМАЦИЕЙ ===== */
+/* ===== ПЕЧАТЬ ===== */
 
 function typeAnswer(text,element){
 let answer=generateAnswer(text);
@@ -254,7 +270,7 @@ let i=0;
 
 let interval=setInterval(()=>{
 let span=document.createElement("span");
-span.className="fadeText";
+span.className="fadeLetter";
 span.innerText=answer[i];
 element.appendChild(span);
 i++;
@@ -281,18 +297,18 @@ return `Я - DeepCore. Меня так зовут, ведь я ИИ 😎
 
 if(lower==="/bigresponse"){
 return `Квантовый компьютер — это вычислительная система нового поколения.
-Он работает не с битами, а с кубитами.
+Он использует кубиты вместо битов.
 Кубит может быть 0 и 1 одновременно.
 Это называется суперпозиция.
 Также существует квантовая запутанность.
-Она связывает кубиты особым образом.
-Благодаря этому вычисления идут параллельно.
+Она связывает частицы между собой.
+Благодаря этому вычисления происходят параллельно.
 Это даёт огромный прирост мощности.
-Такие системы могут моделировать молекулы.
+Квантовые системы могут моделировать молекулы.
 Разрабатывать новые лекарства.
-Оптимизировать логистику.
-Улучшать машинное обучение.
+Решать сложные задачи оптимизации.
 Работать с криптографией.
+Анализировать большие данные.
 Однако технология ещё развивается.
 Кубиты нестабильны.
 Чувствительны к шуму.
@@ -315,27 +331,43 @@ return "Интересный вопрос 😎";
 /* ===== ПЛЮС ===== */
 
 function plusMenu(){
-alert("У DeepCore пока нет такой функции 😅");
+alert(`Фотографии
+Камера
+Файлы
+Изображения
+Глубокое мышление
+Покупки
+Исследование приложений
+Создать изображение
+Глубокое исследование
+
+У DeepCore пока нет такой функции 😅`);
 }
 
 /* ===== PLACEHOLDER ===== */
 
 const phrases=[
-"DeepCore не спит","DeepCore крутой","Кстати, DeepCore 4.1 v8",
-"Спрашивай что угодно","DeepCore шарит 😎",
-"DeepCore рил мощный ИИ, да да","Попробуй /Bigresponse 🚀"
+"DeepCore не спит",
+"DeepCore крутой",
+"Кстати, DeepCore 4.1 v9",
+"Спрашивай что угодно",
+"DeepCore лучший друг ChatGPT",
+"DeepCore шарит 😎",
+"DeepCore рил мощный ИИ, да да",
+"Спроси что-нибудь умное",
+"Попробуй /Bigresponse 🚀"
 ];
 
-let pIndex=0,cIndex=0,del=false;
+let p=0,c=0,d=false;
 
 function animatePlaceholder(){
-let current=phrases[pIndex];
-if(!del){
-input.placeholder=current.substring(0,cIndex++);
-if(cIndex>current.length){del=true;setTimeout(animatePlaceholder,1000);return;}
+let cur=phrases[p];
+if(!d){
+input.placeholder=cur.substring(0,c++);
+if(c>cur.length){d=true;setTimeout(animatePlaceholder,1000);return;}
 }else{
-input.placeholder=current.substring(0,cIndex--);
-if(cIndex===0){del=false;pIndex=(pIndex+1)%phrases.length;}
+input.placeholder=cur.substring(0,c--);
+if(c===0){d=false;p=(p+1)%phrases.length;}
 }
 setTimeout(animatePlaceholder,80);
 }
